@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import CustomError from "@/utils/CustomError";
+export const runtime = "nodejs";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 

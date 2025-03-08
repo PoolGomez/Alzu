@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { sendEmailResetPassword } from "@/lib/mail";
 import { loginSchema, registerSchema, resetPasswordSchema, sendResetPasswordSchema } from "@/lib/zod";
 import CustomError from "@/utils/CustomError";
+export const runtime = "nodejs";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { AuthError } from "next-auth";
