@@ -1,5 +1,6 @@
 export const runtime = "nodejs";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 export const encrypt= async(text: string)=>{
-    return await bcrypt.hash(text, 10);
+    const saltRounds = 10; // Número de rondas de sal
+    return await bcrypt.hash(text, saltRounds);
 }
