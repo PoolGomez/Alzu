@@ -4,7 +4,6 @@ import type { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { loginSchema } from "./lib/zod";
 import { db } from "./lib/db";
-export const runtime = "nodejs";
 import bcrypt from "bcryptjs"
 import {nanoid} from"nanoid"
 import { sendEmailVerification } from "./lib/mail";

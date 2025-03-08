@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import CustomError from "@/utils/CustomError";
-export const runtime = "nodejs";
-import bcrypt from "bcryptjs";
+import { encrypt } from "@/utils/hash-password";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -36,8 +35,8 @@ export async function POST(request: NextRequest) {
 
     // hash de la contraseña
     const pass = password as string;
-    const passwordHash = await bcrypt.hash(pass, 10);
-
+    // const passwordHash = await bcrypt.hash(pass, 10);
+    const passwordHash= await encrypt(pass);
     //marcar el email como verificado
     await db.user.update({
       where: {

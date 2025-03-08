@@ -4,8 +4,8 @@ import { db } from "@/lib/db";
 import { sendEmailResetPassword } from "@/lib/mail";
 import { loginSchema, registerSchema, resetPasswordSchema, sendResetPasswordSchema } from "@/lib/zod";
 import CustomError from "@/utils/CustomError";
-export const runtime = "nodejs";
-import bcrypt from "bcryptjs";
+import { encrypt } from "@/utils/hash-password";
+
 import { nanoid } from "nanoid";
 import { AuthError } from "next-auth";
 import { z } from "zod";
@@ -178,7 +178,8 @@ export const registerAction = async(
             }
         }
         // hash de la contraseña
-        const passwordHash = await bcrypt.hash(data.password, 10);
+        // const passwordHash = await bcrypt.hash(data.password, 10);
+        const passwordHash = await encrypt(data.password);
 
         //crear el usuario
         await db.user.create({
