@@ -6,8 +6,12 @@ const publicRoutes = [
   "/",
   "/login",
   "/register",
+  "/reset-password",
+  "/send-reset-password",
   "/api/auth/verify-email",
-  "/api/sendemail",
+  "/api/auth/send-verify-email",
+  "/api/auth/reset-password",
+  "/api/auth/send-reset-password",
 ];
 
 const { auth: middleware } = NextAuth(authConfig);

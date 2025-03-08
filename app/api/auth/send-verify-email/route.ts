@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   
       return NextResponse.json({ message: "Correo enviado exitosamente" });
     } catch (error) {
-        console.log(`SENDEMAIL_POST:${error}`)
+        console.log(`SEND-EMAIL-VERIFY-EMAIL_POST:${error}`)
       return NextResponse.json({ error: "Error al enviar correo" }, { status: 500 });
     }
   }

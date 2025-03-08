@@ -1,19 +1,29 @@
 
-// import brevo from "@getbrevo/brevo"
+export const sendEmailResetPassword = async(email: string, token: string) => {
+  try {
+      const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/send-reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            to: email,
+            token
+        }),
+      });
 
-// const apiInstance = new brevo.TransactionalEmailsApi()
+      const data = await response.json();
+          console.log(data);
+  
+        return {success: true}
 
-// apiInstance.setApiKey(
-//     brevo.TransactionalEmailsApiApiKeys.apiKey,
-//     process.env.BREVO_API_KEY as string
-// )
-
-// const smtpEmail = new brevo.SendSmtpEmail()
+  }catch(error){
+    console.log(error)
+    return {error: true}
+  }
+}
 
 export const sendEmailVerification = async(email: string,token: string)=>{
-// `<h1>token:  ${token}</h1>`
     try {
-        const response = await fetch(`${process.env.NEXTAUTH_URL}/api/sendemail`, {
+        const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/send-verify-email`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 

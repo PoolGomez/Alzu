@@ -1,13 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { SessionProvider } from "next-auth/react";
+import ContentMain from "./_components/content-main";
+// import ButtonIn from "./_components/button-in";
 
-export default function Home() {
+export default  function Home() {
   return (
-    
-
-        <Button>
-        Click me
-        </Button>
-
-        
+    <SessionProvider >
+    <ContentMain />
+    {/* <ButtonIn /> */}
+    </SessionProvider>
   );
 }
