@@ -8,31 +8,33 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 generator client {
   provider = "prisma-client-js"
 }
 
-enum Role{
+enum Role {
   user
   admin
 }
+
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   password      String?
   emailVerified DateTime?
   image         String?
-  role          Role            @default(user)
+  role          Role      @default(user)
   accounts      Account[]
   // sessions      Session[]
   // Optional for WebAuthn support
   // Authenticator Authenticator[]
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -45,40 +47,41 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
 // model Session {
 //   sessionToken String   @unique
 //   userId       String
 //   expires      DateTime
 //   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
 // }
- 
+
 model VerificationToken {
-  identifier String     @unique
+  identifier String   @unique
   token      String
   expires    DateTime
- 
+
   @@id([identifier])
 }
 
 model ResetPasswordToken {
-  identifier String @unique
-  token String
-  expires DateTime
+  identifier String   @unique
+  token      String
+  expires    DateTime
+
   @@id([identifier])
 }
- 
+
 // Optional for WebAuthn support
 // model Authenticator {
 //   credentialID         String  @unique
@@ -89,8 +92,17 @@ model ResetPasswordToken {
 //   credentialDeviceType String
 //   credentialBackedUp   Boolean
 //   transports           String?
- 
+
 //   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
 //   @@id([userId, credentialID])
 // }
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  owner    String  //user email
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}

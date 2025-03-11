@@ -1,8 +1,7 @@
 
 
 import { Menu, X, ChefHat } from 'lucide-react';
-import ButtonIn from './button-in';
-// import { useSession } from "next-auth/react"
+import ButtonsLogin from './buttons-login';
 
 interface NavbarProps {
     isSidebarOpen: boolean;
@@ -68,7 +67,7 @@ const Navbar = ({ isSidebarOpen, toggleSidebar,buttonRef }: NavbarProps) => {
               </a>
               )} */}
 
-              <ButtonIn />
+              <ButtonsLogin />
             </div>
           </div>
         </div>

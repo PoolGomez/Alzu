@@ -102,7 +102,8 @@ export const sendEmailResetPasswordAction = async(values:z.infer<typeof sendRese
             data:{
             identifier:user.email,
             token,
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24) // 24 horas
+            // expires: new Date(Date.now() + 1000 * 60 * 60 * 24) // 24 horas
+            expires: new Date(Date.now() + 1000 * 60 * 15) // 15 minutos
             }
         })
 

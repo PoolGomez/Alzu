@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Utensils, Users, BarChart3, Clock } from "lucide-react";
-import Navbar from "@/components/navbar";
-import SideBar from "@/components/sidebar";
+import Navbar from "./navbar";
+import Sidebar from "./sidebar";
+
 
 const ContentMain = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -38,7 +39,7 @@ const ContentMain = () => {
         toggleSidebar={toggleSidebar}
         buttonRef={buttonRef}
       />
-      <SideBar isOpen={isSidebarOpen} ref={sidebarRef} />
+      <Sidebar isOpen={isSidebarOpen} ref={sidebarRef} />
 
       {/* Main Content */}
       <main className="pt-16">

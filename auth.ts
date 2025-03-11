@@ -7,20 +7,6 @@ import { db } from "./lib/db"
 
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  logger:{
-    error(code, ...message){
-      console.log("logger Error:")
-      console.log(code,message)
-    },
-    warn(code, ...message) {
-      console.log("logger Warn:")
-      console.log(code,message)
-    },
-    debug(code, ...message) {
-      console.log("logger Debug:")
-      console.log(code,message)
-    }
-  },
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   ...authConfig,

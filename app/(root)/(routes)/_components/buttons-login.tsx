@@ -1,7 +1,7 @@
 "use client"
 import { useSession } from "next-auth/react"
 
-const ButtonIn = () => {
+const ButtonsLogin = () => {
     const { data: session } = useSession()
 
     if(!session){
@@ -33,4 +33,4 @@ const ButtonIn = () => {
     //   return <p>No logueado</p>
 }
 
-export default ButtonIn
+export default ButtonsLogin

@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/modal/toast-provider";
+import { ModalProvider } from "@/providers/modal-provider";
+import { ThemeProvider } from "next-themes";
 // import { SessionProvider } from "next-auth/react";
 // import Script from "next/script";
 
@@ -33,8 +35,16 @@ export default function RootLayout({
         /> */}
         
         {/* <SessionProvider> */}
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+        <ModalProvider />
         <ToastProvider />
         {children}
+        </ThemeProvider>
         {/* </SessionProvider> */}
       </body>
     </html>
