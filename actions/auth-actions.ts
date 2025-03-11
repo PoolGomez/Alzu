@@ -1,5 +1,6 @@
 "use server"
 import { signIn } from "@/auth";
+import { verifyCaptchaToken } from "@/lib/captcha";
 import { db } from "@/lib/db";
 import { sendEmailResetPassword } from "@/lib/mail";
 import { loginSchema, registerSchema, resetPasswordSchema, sendResetPasswordSchema } from "@/lib/zod";
@@ -27,7 +28,7 @@ export const loginAction = async(values: z.infer<typeof loginSchema>) => {
     }
 }
 
-export const sendEmailResetPasswordAction = async(values:z.infer<typeof sendResetPasswordSchema>)=>{
+export const sendEmailResetPasswordAction = async(values:z.infer<typeof sendResetPasswordSchema>, tokenre: string | null)=>{
     try {
         const { data , success } = sendResetPasswordSchema.safeParse(values)
         if(!success){
@@ -35,6 +36,13 @@ export const sendEmailResetPasswordAction = async(values:z.infer<typeof sendRese
                 error: "Invalid data"
             }
         }
+
+        if(!tokenre){
+            return {
+                error: "Token no found"
+            }
+        }
+
 
         // verificar si el usuario existe
         const user = await db.user.findUnique({
@@ -50,6 +58,27 @@ export const sendEmailResetPasswordAction = async(values:z.infer<typeof sendRese
             return {
                 error: "No existe un usuario con ese correo"
             }
+        }
+
+        //google recaptcha
+        const captchaData = await verifyCaptchaToken(tokenre);
+        if(!captchaData){
+            return {
+                error: "Captcha Failed"
+            }
+        }
+        if(!captchaData.success || captchaData.score < 0.5){
+            console.log(captchaData)
+            // console.log(captchaData["error-codes"])
+            return{
+                error: "error captcha < 0.5"
+                // error:!captchaData.succes ? captchaData["error-codes"] : undefined
+            }
+            // return {
+            //     success: false,
+            //     message: "Captcha Failed",
+            //     errors: !captchaData.succes ? captchaData["error-codes"] : undefined
+            // }
         }
 
 

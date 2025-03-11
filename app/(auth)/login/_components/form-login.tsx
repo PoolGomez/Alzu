@@ -84,7 +84,7 @@ const FormLogin = ({ isVerified, OAuthAccountNotLinked }: FormLoginProps) => {
                     <FormItem className="grid gap-2">
                       <FormLabel>Correo Electrónico</FormLabel>
                       <FormControl>
-                        <Input placeholder="email" type="email" {...field} />
+                        <Input placeholder="email" type="email" autoComplete="email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -110,6 +110,7 @@ const FormLogin = ({ isVerified, OAuthAccountNotLinked }: FormLoginProps) => {
                         <Input
                           placeholder="password"
                           type="password"
+                          autoComplete="current-password"
                           {...field}
                         />
                       </FormControl>

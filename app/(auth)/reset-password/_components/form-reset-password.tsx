@@ -78,7 +78,7 @@ const FormResetPassword = ({token}:FormResetPasswordProps) => {
                     <FormItem className="grid gap-2">
                       <FormLabel>Contraseña</FormLabel>
                       <FormControl>
-                        <Input placeholder="ingrese nueva contraseña" type="password" {...field} />
+                        <Input placeholder="ingrese nueva contraseña" type="password" autoComplete="current-password" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

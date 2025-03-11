@@ -73,7 +73,7 @@ const FormRegister = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="name" type="text" {...field} />
+                      <Input placeholder="name" type="text" autoComplete="name" {...field} />
                     </FormControl>
                     {/* <FormDescription>
                   This is your public display name.
@@ -90,7 +90,7 @@ const FormRegister = () => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="email" type="email" {...field} />
+                      <Input placeholder="email" type="email" autoComplete="email" {...field} />
                     </FormControl>
                     {/* <FormDescription>
                   This is your public display name.
@@ -110,6 +110,7 @@ const FormRegister = () => {
                       <Input
                         placeholder="password"
                         type="password"
+                        autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>

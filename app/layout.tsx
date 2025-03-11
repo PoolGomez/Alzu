@@ -1,7 +1,10 @@
+
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/modal/toast-provider";
+// import { SessionProvider } from "next-auth/react";
+// import Script from "next/script";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -24,8 +27,15 @@ export default function RootLayout({
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         className={`${poppins.className} antialiased`}
       >
+        {/* <Script 
+          strategy="beforeInteractive" 
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}`}
+        /> */}
+        
+        {/* <SessionProvider> */}
         <ToastProvider />
         {children}
+        {/* </SessionProvider> */}
       </body>
     </html>
   );

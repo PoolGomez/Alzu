@@ -1,7 +1,7 @@
 "use client";
 import { sendResetPasswordSchema } from "@/lib/zod";
 // import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,11 +24,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getCaptchaToken } from "@/lib/captcha";
+import toast from "react-hot-toast";
+import { LoaderCircle } from "lucide-react";
 
 
 const FormSendResetPassword = () => {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [disabled, setDisabled] = useState(false);
   // const router = useRouter();
 
   const form = useForm<z.infer<typeof sendResetPasswordSchema>>({
@@ -37,19 +43,37 @@ const FormSendResetPassword = () => {
       email: "",
     },
   });
+  //begin timer
+  // const handleClick = () => {
+    
+  //   setDisabled(true);
+  //   setTimeLeft(90); // Tiempo en segundos
+  // };
+  useEffect(() => {
+      if (timeLeft > 0) {
+        const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+        return () => clearTimeout(timer);
+      } else {
+        setDisabled(false);
+      }
+    }, [timeLeft]);
+    //end timer
 
   async function onSubmit(values: z.infer<typeof sendResetPasswordSchema>) {
     setError(null);
     startTransition(async () => {
 
-      const response = await sendEmailResetPasswordAction(values);
+      const token = await getCaptchaToken()
+      const response = await sendEmailResetPasswordAction(values, token);
       if (response.error) {
         setError(response.error);
-      } 
-      // else {
-      //   router.push("/alzu");
-      // }
+      } else{
+        toast.success("Email enviado correctamente")
+      }
 
+      //timer
+      setDisabled(true);
+      setTimeLeft(90); // Tiempo en segundos
 
     });
   }
@@ -82,8 +106,11 @@ const FormSendResetPassword = () => {
                 />
 
                 {error && <FormMessage>{error}</FormMessage>}
-                <Button type="submit" disabled={isPending} className="w-full">
-                  Enviar Correo
+                {/* <TimerButton /> */}
+                <Button type="submit" disabled={(isPending || disabled)} className="w-full">
+                  {isPending && <LoaderCircle className="mr-2 h-4 w-4 animate-spin"/>}
+                  {disabled ? `Espera ${timeLeft}s` : "Enviar Correo"}
+                  {/* Enviar Correo */}
                 </Button>
               </div>
 

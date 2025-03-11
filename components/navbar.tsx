@@ -67,6 +67,7 @@ const Navbar = ({ isSidebarOpen, toggleSidebar,buttonRef }: NavbarProps) => {
                 Comenzar Prueba Gratis
               </a>
               )} */}
+
               <ButtonIn />
             </div>
           </div>
