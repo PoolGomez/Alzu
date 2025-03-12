@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import CustomError from "@/utils/CustomError";
 import { encrypt } from "@/utils/hash-password";
 import { NextRequest, NextResponse } from "next/server";
-
+export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
 
