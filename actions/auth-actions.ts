@@ -211,12 +211,33 @@ export const registerAction = async(
         // const passwordHash = await bcrypt.hash(data.password, 10);
         const passwordHash = await encrypt(data.password);
 
+        //obtener datos del plan FREE
+        const dataPlanFree = await db.subcription.findUnique({
+            where:{
+                id:"FREE"
+            }
+        });
+        if(!dataPlanFree){
+            return {
+                error: "Datos del plan Free no encontrado"
+            }
+        }
+
         //crear el usuario
-        await db.user.create({
+        const newUser = await db.user.create({
             data:{
                 email: data.email,
                 name: data.name,
                 password: passwordHash,
+            }
+        })
+        
+        //Crear subcription Free
+        await db.userSubcription.create({
+            data:{
+                userId : newUser.id,
+                subcriptionId: dataPlanFree.id,
+                maxCompanies: dataPlanFree.maxCompanies,
             }
         })
 

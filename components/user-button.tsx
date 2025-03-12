@@ -3,11 +3,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { BadgeCheck, LogOut, User } from "lucide-react";
+import { BadgeCheck, LogOut, Store, User } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const UserButton = ({username}:{username: string})=>{
+    const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const handleLogout = async () => {
         setIsOpen(false)
@@ -75,8 +77,14 @@ const UserButton = ({username}:{username: string})=>{
                             
                             
                             <SidebarMenuItem >
-                              <SidebarMenuButton>
+                              <SidebarMenuButton onClick={()=>{router.push("/alzu/account")}}>
                                 <BadgeCheck /> <span>Cuenta</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+
+                            <SidebarMenuItem >
+                              <SidebarMenuButton onClick={()=>{router.push("/alzu/")}}>
+                                <Store /> <span>Mis empresas</span>
                               </SidebarMenuButton>
                             </SidebarMenuItem>
     

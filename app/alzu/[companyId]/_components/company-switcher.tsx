@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useCompanyModal } from "@/hooks/use-company-modal";
 import { Company } from "@prisma/client";
-import { ChevronsUpDown, GalleryVerticalEnd } from "lucide-react";
+import { ChevronsUpDown, GalleryVerticalEnd, Group } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { CompanyListItem } from "./company-list-item";
@@ -26,22 +26,27 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 >;
 
 interface CompanySwitcherProps extends PopoverTriggerProps {
-  items: Company[];
+  myCompanies: Company[];
+  sharedCompanies: Company[];
 }
 
-export function CompanySwitcher({ items }: CompanySwitcherProps) {
+export function CompanySwitcher({ myCompanies, sharedCompanies }: CompanySwitcherProps) {
   const params = useParams();
   const router = useRouter();
   const companyModal = useCompanyModal();
 
 //   const isMobile = useIsMobile();
 
-  const formattedCompanies = items?.map((item) => ({
+  const formattedMyCompanies = myCompanies?.map((item) => ({
     label: item.name,
     value: item.id,
   }));
+  const formattedSharedCompanies = sharedCompanies?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }))
 
-  const currentCompany = formattedCompanies?.find(
+  const currentCompany = formattedMyCompanies?.find(
     (item) => item.value === params.companyId
   );
 
@@ -70,7 +75,7 @@ export function CompanySwitcher({ items }: CompanySwitcherProps) {
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
                       {currentCompany?.value
-                        ? formattedCompanies?.find(
+                        ? formattedMyCompanies?.find(
                             (framework) =>
                               framework.value === currentCompany.value
                           )?.label
@@ -87,7 +92,7 @@ export function CompanySwitcher({ items }: CompanySwitcherProps) {
                 side="bottom"
                 sideOffset={4}
               >
-                <SidebarGroupLabel>Stores</SidebarGroupLabel>
+                <SidebarGroupLabel>Mis Empresas</SidebarGroupLabel>
                 {/* <div className="w-full px-2 py-1 flex items-center border rounded-md border-gray-100">
                         <StoreIcon className="mr-2 h-4 w-4 min-w-4" />
                         <input
@@ -97,15 +102,32 @@ export function CompanySwitcher({ items }: CompanySwitcherProps) {
                         className="flex-1 w-full outline-none"
                         />
                     </div> */}
-                {formattedCompanies?.map((item, index) => (
+                {formattedMyCompanies.length > 0 ? formattedMyCompanies?.map((item, index) => (
                   <CompanyListItem
                     company={item}
                     key={`${index}-${item.value}`}
                     onSelect={onStoreSelect}
                     isChecked={currentCompany?.value === item.value}
                   />
-                ))}
-
+                )) :(
+                  <div className="flex items-center px-2 py-1 hover: bg-grat-50 text-muted-foreground">
+                    <p className="w-full truncate text-sm whitespace-nowrap">No hay empresas</p>
+                  </div>
+                )}
+                <SidebarGroupLabel>Empresas Compartidas</SidebarGroupLabel>
+                {formattedSharedCompanies.length > 0 ? formattedSharedCompanies?.map((item, index) =>(
+                  <CompanyListItem 
+                    company={item}
+                    key={`${index}-${item.value}`}
+                    onSelect={onStoreSelect}
+                    isChecked={currentCompany?.value === item.value}
+                  />
+                )) : (
+                  <div className="flex items-center px-2 py-1 hover: bg-grat-50 text-muted-foreground">
+                    <p className="w-full truncate text-sm whitespace-nowrap">No hay empresas</p>
+                  </div>
+                )
+                }
                 {/* <Link href="/alzu">
                       <DropdownMenuItem className="gap-2 p-2 ">
                         <div className="flex size-6 items-center justify-center rounded-md border bg-background">
@@ -128,6 +150,18 @@ export function CompanySwitcher({ items }: CompanySwitcherProps) {
                         </div>
                         </DropdownMenuItem>
                     </Link> */}
+
+                <Separator />
+
+                <div 
+                    onClick={()=>{
+                      router.push("/alzu")
+                    }} 
+                    className="flex items-center bg-background px-2 py-2 cursor-pointer hover:bg-accent"
+                >
+                    <Group className="mr-2 h-4 w-4" />
+                    <span className="text-sm"> Ver todas las empresas</span>
+                </div>
 
                 <Separator />
 

@@ -33,6 +33,10 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  CompanyUser CompanyUser[]
+
+  UserSubcription UserSubcription[]
 }
 
 model Account {
@@ -102,7 +106,56 @@ model Company {
   id        String   @id @default(cuid())
   name      String
   owner    String  //user email
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  users CompanyUser[] // Relación con los usuarios que tienen acceso a la empresa
 }
+
+
+
+model Subcription {
+  id String @unique  //FREE , BASIC, PREMIUM, CUSTOM
+  name String
+  maxCompanies Int //limite de empresas que puede crear
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@id([id])
+  UserSubcription UserSubcription[]
+}
+
+model UserSubcription {
+  id String @id @default(uuid())
+  userId String @unique
+  subcriptionId String
+  maxCompanies Int // Límite de empresas que puede crear
+
+  user     User    @relation(fields: [userId], references: [id])
+  subcription Subcription @relation(fields:[subcriptionId], references:[id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, subcriptionId])
+}
+
+model CompanyUser {
+  id String @id @default(uuid())
+  userId String
+  companyId String
+
+  viewCompany Boolean
+  updateCompany Boolean
+  deleteCompany Boolean
+
+  user      User    @relation(fields: [userId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id])
+
+  @@unique([userId, companyId]) //Un usuario no puede estar dos veces en la misma empresa
+}
+
+// model CompanyPermission {
+//   id
+// }

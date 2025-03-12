@@ -7,9 +7,11 @@ import { redirect } from 'next/navigation';
 import React from 'react'
 import { SideNav } from './sidenav';
 import ShowOnlyScreen from '@/components/show-only-screen';
-import UserButton from './user-button';
-import { ToggleTheme } from './toggle-theme';
+
+
 import { CompanySwitcher } from './company-switcher';
+import { ToggleTheme } from '@/components/toggle-theme';
+import UserButton from '@/components/user-button';
 
 const SideBar = async({children}:{children: React.ReactNode}) => {
 
@@ -19,15 +21,25 @@ const SideBar = async({children}:{children: React.ReactNode}) => {
         redirect("/login")
     }
 
-    const companySnap = await db.company.findMany({
+    const myCompaniesSnap = await db.company.findMany({
         where:{
             owner: session?.user?.email
         }
     });
-    const companies = [] as Company[];
-    companySnap.forEach(doc =>{
-        companies.push(doc)
-    })
+    const myCompanies = [] as Company[];
+    myCompaniesSnap.forEach(doc =>{
+        myCompanies.push(doc)
+    });
+
+    const othersCompanySnap = await db.companyUser.findMany({
+        where:{
+            userId : session.user.email
+        },
+        include:{
+            company: true
+        }
+    });
+    const othersCompanies = othersCompanySnap.map((item) => item.company);
 
   return (
     <SidebarProvider>
@@ -35,7 +47,7 @@ const SideBar = async({children}:{children: React.ReactNode}) => {
             <SidebarContent>
                 <SidebarGroup>
                     <ShowOnlyScreen screen='mobile'>
-                        <CompanySwitcher items={companies} />
+                        <CompanySwitcher myCompanies={myCompanies} sharedCompanies={othersCompanies} />
                     </ShowOnlyScreen>
                     <SidebarGroupLabel>Modules</SidebarGroupLabel>
                     <SideNav />
@@ -49,7 +61,7 @@ const SideBar = async({children}:{children: React.ReactNode}) => {
                     <SidebarTrigger className="p-2" />
                     <Separator orientation="vertical" className="mr-2 h-8" />
                     <ShowOnlyScreen screen='desktop'>
-                        <CompanySwitcher items={companies} />
+                        <CompanySwitcher myCompanies={myCompanies} sharedCompanies={othersCompanies} />
                     </ShowOnlyScreen>
                     
                 </div>
