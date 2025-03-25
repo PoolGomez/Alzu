@@ -46,7 +46,11 @@ export function CompanySwitcher({ myCompanies, sharedCompanies }: CompanySwitche
     value: item.id,
   }))
 
-  const currentCompany = formattedMyCompanies?.find(
+  const allFormattedCompanies = [ ...formattedMyCompanies, ...formattedSharedCompanies]
+  console.log("allFormattedCompanies: ", allFormattedCompanies)
+  // const allFormattedCompanies = formattedMyCompanies.concat(formattedSharedCompanies)
+
+  const currentCompany = allFormattedCompanies?.find(
     (item) => item.value === params.companyId
   );
 
@@ -75,7 +79,7 @@ export function CompanySwitcher({ myCompanies, sharedCompanies }: CompanySwitche
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
                       {currentCompany?.value
-                        ? formattedMyCompanies?.find(
+                        ? allFormattedCompanies?.find(
                             (framework) =>
                               framework.value === currentCompany.value
                           )?.label

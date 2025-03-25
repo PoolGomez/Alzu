@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import CardCompany from "./_components/card-company";
 import CardNewCompany from "./_components/card-new-company";
+import { UserWithAllCompanies } from "@/types-db";
 // import { Card, CardContent } from "@/components/ui/card";
 
 // import { useCompanyModal } from '@/hooks/use-company-modal'
@@ -37,27 +38,51 @@ const AlzuPage = async () => {
     if(!session?.user?.email){
         redirect("/login")
     }
-    
-
-    const myCompaniesData = await db.company.findMany({
-        where:{
-            owner: session?.user?.email
+    console.log("session:", session)
+    const userData = (await db.user.findUnique({
+      // select:{
+      //   id: true
+      // },
+      omit:{
+        password: true
+      },
+      where:{
+        email: session.user.email
+      },
+      include:{
+        companiesUserRoles: {
+          include: {
+            company:true
+          }
         },
-        orderBy:{
-            createdAt:"desc"
-        }
-    })
-    const sharedCompanyData = await db.companyUser.findMany({
-            where:{
-                userId : session.user.email
-            },
-            include:{
-                company: true
-            }
-     });
-    const sharedCompanies = sharedCompanyData.map((item) => item.company);
+        createdCompanies: true
+      }
+    }) ) as UserWithAllCompanies
 
+    if(!userData){
+      redirect("/login")
+    }
 
+    console.log("userData: ", userData)
+
+    // const myCompaniesData = await db.company.findMany({
+    //     where:{
+    //         ownerId: userData.id
+    //     },
+    //     orderBy:{
+    //         createdAt:"desc"
+    //     }
+    // })
+    // const sharedCompanyData = await db.companyUser.findMany({
+    //         where:{
+    //             userId : userData?.id //
+    //         },
+    //         include:{
+    //             company: true
+    //         },
+    //         distinct: ['companyId'],
+    //  });
+    // const sharedCompanies= sharedCompanyData.map((item) => item.company);
     
     return (
         <div className="bg-white-foreground p-4">
@@ -68,14 +93,14 @@ const AlzuPage = async () => {
             <Plus size={40} className="text-yellow-500" />
             <p className="mt-2 text-lg">Crear una empresa</p>
           </Card> */}
-          {myCompaniesData.map((company) => (
+          {userData.createdCompanies.map((company) => (
             <CardCompany key={company.id} company={company} />
           ))}
         </div>
         <h1 className="text-2xl font-normal m-6">Empresas Compartidas Conmigo</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {sharedCompanies.map((company) => (
-            <CardCompany key={company.id} company={company} />
+          {userData.companiesUserRoles.map((companyUserRol) => (
+            <CardCompany key={companyUserRol.company.id} company={companyUserRol.company} />
           ))}
 
           {/* {projects.map((project)=>(
