@@ -52,3 +52,31 @@ export async function updateCompanyRoleAction(id: string, name: string, descript
   }
 }
 
+export async function deleteCompanyRoleAction(id: string){
+  try {
+    await db.companyRole.delete({
+      where: {
+        id
+      },
+    })
+  } catch (error) {
+    console.log(error)
+    throw new Error("error deleteCompanyRoleAction");
+  }
+}
+
+export async function createCompanyRoleAction(name: string, description: string, permissions: PermissionAction[], companyId: string){
+  try {
+    await db.companyRole.create({
+      data:{
+        name,
+        description,
+        permissions,
+        companyId
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    throw new Error("error createCompanyRoleAction");
+  }
+}

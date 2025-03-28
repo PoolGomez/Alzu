@@ -1,7 +1,8 @@
 "use client";
 
-import { updateCompanyRoleAction } from "@/actions/company-role-action";
+import { deleteCompanyRoleAction, updateCompanyRoleAction } from "@/actions/company-role-action";
 import { Heading } from "@/app/alzu/_components/heading";
+import { AlertModal } from "@/components/modal/alert-modal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -24,63 +25,67 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
+import { formSchemaRole } from "../../_components/schema-role";
+import { permissionsOptions } from "../../_components/permissions-options";
 
-const permissionsOptions= [
-    { id: 'VIEW_DASHBOARD', label: 'Ver Dashboard' },
+// const permissionsOptions= [
+//     { id: 'VIEW_DASHBOARD', label: 'Ver Dashboard' },
 
-    { id: 'VIEW_PRODUCTS', label: 'Ver Productos' },
-    { id: 'CREATE_PRODUCT', label: 'Crear Producto' },
-    { id: 'EDIT_PRODUCT', label: 'Editar Producto' },
-    { id: 'DELETE_PRODUCT', label: 'Eliminar Producto' },
+//     { id: 'VIEW_PRODUCTS', label: 'Ver Productos' },
+//     { id: 'CREATE_PRODUCT', label: 'Crear Producto' },
+//     { id: 'EDIT_PRODUCT', label: 'Editar Producto' },
+//     { id: 'DELETE_PRODUCT', label: 'Eliminar Producto' },
 
-    { id: 'VIEW_CATEGORIES', label: 'Ver Categorías' },
-    { id: 'CREATE_CATEGORY', label: 'Crear Categoría' },
-    { id: 'EDIT_CATEGORY', label: 'Editar Categoría' },
-    { id: 'DELETE_CATEGORY', label: 'Eliminar Categoría' },
+//     { id: 'VIEW_CATEGORIES', label: 'Ver Categorías' },
+//     { id: 'CREATE_CATEGORY', label: 'Crear Categoría' },
+//     { id: 'EDIT_CATEGORY', label: 'Editar Categoría' },
+//     { id: 'DELETE_CATEGORY', label: 'Eliminar Categoría' },
 
-    { id: 'VIEW_PRESENTATIONS', label: 'Ver Presentaciones' },
-    { id: 'CREATE_PRESENTATION', label: 'Crear Presentación' },
-    { id: 'EDIT_PRESENTATION', label: 'Editar Presentación' },
-    { id: 'DELETE_PRESENTATION', label: 'Eliminar Presentación' },
+//     { id: 'VIEW_PRESENTATIONS', label: 'Ver Presentaciones' },
+//     { id: 'CREATE_PRESENTATION', label: 'Crear Presentación' },
+//     { id: 'EDIT_PRESENTATION', label: 'Editar Presentación' },
+//     { id: 'DELETE_PRESENTATION', label: 'Eliminar Presentación' },
 
-    { id: 'VIEW_ORDERS', label: 'Ver Ordenes' },
-    { id: 'CREATE_ORDER', label: 'Crear Orden' },
-    { id: 'EDIT_ORDER', label: 'Editar Orden' },
-    { id: 'DELETE_ORDER', label: 'Eliminar Orden' },
+//     { id: 'VIEW_ORDERS', label: 'Ver Ordenes' },
+//     { id: 'CREATE_ORDER', label: 'Crear Orden' },
+//     { id: 'EDIT_ORDER', label: 'Editar Orden' },
+//     { id: 'DELETE_ORDER', label: 'Eliminar Orden' },
 
-    { id: 'VIEW_ROOMS', label: 'Ver Salas' },
-    { id: 'CREATE_ROOM', label: 'Crear Sala' },
-    { id: 'EDIT_ROOM', label: 'Editar Sala' },
-    { id: 'DELETE_ROOM', label: 'Eliminar Sala' },
+//     { id: 'VIEW_ROOMS', label: 'Ver Salas' },
+//     { id: 'CREATE_ROOM', label: 'Crear Sala' },
+//     { id: 'EDIT_ROOM', label: 'Editar Sala' },
+//     { id: 'DELETE_ROOM', label: 'Eliminar Sala' },
 
-    { id: 'VIEW_TABLES', label: 'Ver Mesas' },
-    { id: 'CREATE_TABLE', label: 'Crear Mesa' },
-    { id: 'EDIT_TABLE', label: 'Editar Mesa' },
-    { id: 'DELETE_TABLE', label: 'Eliminar Mesa' },
+//     { id: 'VIEW_TABLES', label: 'Ver Mesas' },
+//     { id: 'CREATE_TABLE', label: 'Crear Mesa' },
+//     { id: 'EDIT_TABLE', label: 'Editar Mesa' },
+//     { id: 'DELETE_TABLE', label: 'Eliminar Mesa' },
   
-    { id: 'VIEW_COMPANY', label: 'Ver Empresa' },
-  ];
+//     { id: 'VIEW_COMPANY', label: 'Ver Empresa' },
+//   ];
 
 interface RoleFormProps {
   initialData: CompanyRole;
 }
 
-const formSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  permissions: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one item.",
-  }),
-});
+// const formSchema = z.object({
+//   name: z.string().min(1),
+//   description: z.string(),
+//   // permissions: z.array(z.string()).refine((value) => value.some((item) => item), {
+//   //   message: "You have to select at least one item.",
+//   // }),
+//   permissions: z.array(permissionsOptions).optional().default([])
+// });
 
 const RoleForm = ({ initialData }: RoleFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter()
   const params = useParams();
   const isMobile = useIsMobile()
+  const [open, setOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof formSchemaRole>>({
+    resolver: zodResolver(formSchemaRole),
     defaultValues: {
       name: initialData.name,
       description: initialData.description || "",
@@ -91,7 +96,7 @@ const RoleForm = ({ initialData }: RoleFormProps) => {
   const title = "Editar Rol";
   const description = "Editar un Rol";
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchemaRole>) => {
 
     try {
       setIsLoading(true);
@@ -108,12 +113,34 @@ const RoleForm = ({ initialData }: RoleFormProps) => {
     }
   };
 
+  const onDelete = async () => {
+    try {
+      setIsLoading(true);
+      await deleteCompanyRoleAction(initialData.id)
+      toast.success("Role Eliminado");
+      router.refresh();
+      router.push(`/alzu/${params.companyId}/roles`);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+      setOpen(false);
+    }
+  };
+
   const mostrar = () => {
       router.push(`/alzu/${params.companyId}/roles`)
   }
 
   return (
     <>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+        loading={isLoading}
+      />
       <div className="flex items-center justify-center">
         <ArrowLeftCircleIcon className={`w-8 h-8 ${isMobile ? "mx-2": "mx-4"} cursor-pointer `} onClick={()=>mostrar()} />
         <Heading title={title} description={description} />
@@ -122,7 +149,8 @@ const RoleForm = ({ initialData }: RoleFormProps) => {
             disabled={isLoading}
             variant={"destructive"}
             size={"icon"}
-            // onClick={() => setOpen(true)}
+            onClick={() => setOpen(true)}
+            className="cursor-pointer"
           >
             <Trash className="h-4 w-4" />
           </Button>
@@ -181,40 +209,44 @@ const RoleForm = ({ initialData }: RoleFormProps) => {
               </div>
               
               <div className="px-6">
-              {permissionsOptions.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="permissions"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-start space-x-3 space-y-2"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            disabled={item.id==="VIEW_COMPANY" ? true : false}
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
+              {permissionsOptions.map((item) => {
+                const permissionId = item.id as PermissionAction
+                return(
+                  <FormField
+                    key={item.id}
+                    control={form.control}
+                    name="permissions"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={item.id}
+                          className="flex flex-row items-start space-x-3 space-y-2"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              // disabled={item.id==="VIEW_COMPANY" ? true : false}
+                              checked={field.value?.includes(permissionId)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...field.value, item.id])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== item.id
+                                      )
                                     )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal">
+                            {item.label}
+                          </FormLabel>
+                        </FormItem>
+                      )
+                    }}
+                  />
+                )
+              }
+              )}
               </div>
               
               

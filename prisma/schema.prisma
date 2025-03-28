@@ -114,6 +114,8 @@ model Company {
   owner User  @relation("CompanyCreator", fields: [ownerId], references:[id])
   users CompanyUserRole[] // Relación con los usuarios que tienen acceso a la empresa
   roles CompanyRole[]
+
+  categories Category[]
 }
 
 model Subcription {
@@ -208,8 +210,20 @@ enum PermissionAction {
   CREATE_TABLE
   EDIT_TABLE
   DELETE_TABLE
-  
-  VIEW_COMPANY
+}
+
+model Category {
+  id String @id @default(uuid())
+  name String
+  description String?
+
+  companyId    String
+  company      Company      @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, name])
 }
 
 // model Permission {

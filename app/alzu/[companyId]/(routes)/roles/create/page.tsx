@@ -1,6 +1,7 @@
 import { getUsersWithAllCompanies } from "@/actions/user-actions";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import CreateRoleForm from "./_components/create-role-form";
 
 interface CreateRolePageProps {
   params : Promise<{
@@ -26,8 +27,10 @@ const CreateRolePage = async ({params}:CreateRolePageProps) => {
     }
 
   return (
-    <div>
-      CreateRolePage
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <CreateRoleForm />
+      </div>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
 
-import { Armchair, CheckCheck, FolderOpen, Grid, HandPlatter, House, LayoutDashboard, Ruler, Salad, UserRoundCog, Wrench } from "lucide-react"
+import { Armchair, CheckCheck, FolderOpen, Grid, HandPlatter, House, LayoutDashboard, Ruler, Salad, UserRoundCog, Users, Wrench } from "lucide-react"
 import { SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Company, PermissionAction } from "@prisma/client"
@@ -24,13 +24,13 @@ export const SideNav = ({userId, currentCompany, permissions}:SidenavProps) => {
     // const currentCompany = myCompanies.filter((comp) => comp.id === params.companyId) || []
 
     const routes =[
-        {
-            href : `/alzu/${params.companyId}`,
-            label :"Inicio",
-            active : pathname === `/alzu/${params.companyId}`,
-            icon: House,
-            permission: "VIEW_COMPANY"
-        },
+        // {
+        //     href : `/alzu/${params.companyId}`,
+        //     label :"Inicio",
+        //     active : pathname === `/alzu/${params.companyId}`,
+        //     icon: House,
+        //     permission: "VIEW_COMPANY"
+        // },
         {
             href : `/alzu/dashboard/${params.companyId}`,
             label :"Dashboard",
@@ -116,6 +116,12 @@ export const SideNav = ({userId, currentCompany, permissions}:SidenavProps) => {
             icon: UserRoundCog
         },
         {
+            href:  `/alzu/${params.companyId}/users`,
+            label :"Usuarios",
+            active : pathname === `/alzu/${params.companyId}/users`,
+            icon: Users
+        },
+        {
             href : `/alzu/${params.companyId}/settings`,
             label :"Ajustes",
             active : pathname === `/alzu/${params.companyId}/settings`,
@@ -126,6 +132,35 @@ export const SideNav = ({userId, currentCompany, permissions}:SidenavProps) => {
     return (
         <>
         <SidebarMenu>
+            
+            <Collapsible asChild defaultOpen={pathname === `/alzu/${params.companyId}`} className="group/collapsible">
+                <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip="Inicio">
+                            <Link 
+                                href={`/alzu/${params.companyId}`}
+                                className={cn(
+                                    "text-sm font-medium transition-colors hover:text-primary w-full",
+                                    pathname === `/alzu/${params.companyId}` 
+                                        ? "text-black dark:text-white" 
+                                        : "text-muted-foreground"
+                                )}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-start">
+                                        <House className="h-4 w-4" />
+                                        <p className="text-sm ml-4">Inicio</p>
+                                    </div>
+                                    <div>
+                                        {pathname === `/alzu/${params.companyId}` && <CheckCheck className="w-4 h-4"/>}
+                                    </div>
+                                </div>
+                            </Link>
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                </SidebarMenuItem>
+            </Collapsible>
+
             {routes.map((route)=>{
                 if(permissions.some( (permiso : string) => permiso === route.permission) 
                     || userId === currentCompany.ownerId

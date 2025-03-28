@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { PermissionAction } from "@prisma/client";
+// import { PermissionAction } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export const POST = async ( req : Request ) => {
@@ -45,9 +45,7 @@ export const POST = async ( req : Request ) => {
                 name: "Invitado",
                 companyId: id,
                 description:"Role default",
-                permissions: [
-                    PermissionAction.VIEW_COMPANY
-                ]
+                permissions: []
             }
         })
 

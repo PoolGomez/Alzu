@@ -41,7 +41,7 @@ const SideBar = async(
         otherCompanies
     }:SideBarProps) => {
 
-        console.log("permissions: ", permissions)
+        // console.log("permissions: ", permissions)
 
     // const session = await auth();
 
