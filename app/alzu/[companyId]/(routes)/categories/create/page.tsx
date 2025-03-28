@@ -26,7 +26,7 @@ const CreateCategoryPage = async ({params}:{params: Params}) => {
         console.log("si tiene permiso")
         return (
           <div className="flex-col">
-            <div className="flex-1 space-y-5 p-4 pt-4">
+            <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
               <CreateCategoryForm />
             </div>
         </div>

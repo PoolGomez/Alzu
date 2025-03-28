@@ -28,7 +28,7 @@ const CreateRolePage = async ({params}:CreateRolePageProps) => {
 
   return (
     <div className="flex-col">
-      <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
         <CreateRoleForm />
       </div>
     </div>

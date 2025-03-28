@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Copy, Edit, MoreVertical, Trash } from "lucide-react"
 import toast from "react-hot-toast"
 import { AlertModal } from "@/components/modal/alert-modal"
+import { deleteCompanyRoleAction } from "@/actions/company-role-action"
 
 interface CellActionProps{
     data: RoleColumns
@@ -27,15 +28,11 @@ export const CellAction = ({data}:CellActionProps) => {
 
     const onDelete = async () => {
         try {
-          setIsLoading(true);
-    
-        //   await axios.delete(
-        //     `/api/${params.storeId}/categories/${data.id}`
-        //   );
-    
-          toast.success("Rol Elimiado");
-          location.reload()
-          router.push(`/alzu/${params.companyId}/roles`);
+            setIsLoading(true);
+            await deleteCompanyRoleAction(data.id, params.companyId as string)
+            toast.success("Rol Elimiado");
+            location.reload()
+            router.push(`/alzu/${params.companyId}/roles`);
         } catch (error) {
             console.log(error);
           toast.error("Algo salió mal");

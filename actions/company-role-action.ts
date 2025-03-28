@@ -1,82 +1,189 @@
-"use server"
+"use server";
+import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { CompanyRole, PermissionAction } from "@prisma/client";
 
 export async function getCompanyRolById(roleId: string) {
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
+    }
     const role = await db.companyRole.findUnique({
-          where:{
-            id: roleId
-          }
-    })
+      where: {
+        id: roleId,
+      },
+    });
     return role;
-
   } catch (error) {
-    console.log(error)
-        throw new Error("error getCompanyRolById");
+    throw new Error(
+      error instanceof Error ? error.message : "Error getCompanyRolById"
+    );
   }
 }
 
 export async function getCompanyRoleByCompanyIdAction(companyId: string) {
-    try {
-        const roles = await db.companyRole.findMany({
-            where: {
-              companyId
-            },
-          });
-          return roles as CompanyRole[]
-    } catch (error) {
-        console.log(error)
-        throw new Error("error getCompanyRoleByCompanyIdAction");
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
     }
-  
+    const roles = await db.companyRole.findMany({
+      where: {
+        companyId,
+      },
+    });
+    return roles as CompanyRole[];
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Error getCompanyRoleByCompanyIdAction"
+    );
+  }
 }
 
-export async function updateCompanyRoleAction(id: string, name: string, description: string, permissions: PermissionAction[]){
+export async function updateCompanyRoleAction(
+  id: string,
+  name: string,
+  description: string,
+  permissions: PermissionAction[],
+  companyId: string
+) {
   try {
-    await db.companyRole.update({
-      where:{
-          id: id
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
+    }
+    const userData = await db.user.findUnique({
+      where: {
+        email: session.user?.email,
       },
-      data:{
+      select: {
+        email: true,
+        createdCompanies: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (!userData) {
+      throw new Error("No existe informacion del usuario");
+    }
+    const isOwner = userData.createdCompanies.some(
+      (company) => company.id === companyId
+    );
+    if (isOwner) {
+      await db.companyRole.update({
+        where: {
+          id: id,
+        },
+        data: {
           name: name,
           description: description,
           permissions: {
-              set: permissions
-          }
-      }
-    })
+            set: permissions,
+          },
+        },
+      });
+    } else {
+      throw new Error("Este usuario no tiene el permiso");
+    }
   } catch (error) {
-    console.log(error)
-        throw new Error("error updateCompanyRoleAction");
+    throw new Error(
+      error instanceof Error ? error.message : "Error updateCompanyRoleAction"
+    );
   }
 }
 
-export async function deleteCompanyRoleAction(id: string){
+export async function deleteCompanyRoleAction(id: string, companyId: string) {
   try {
-    await db.companyRole.delete({
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
+    }
+    const userData = await db.user.findUnique({
       where: {
-        id
+        email: session.user?.email,
       },
-    })
+      select: {
+        email: true,
+        createdCompanies: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (!userData) {
+      throw new Error("No existe informacion del usuario");
+    }
+    const isOwner = userData.createdCompanies.some(
+      (company) => company.id === companyId
+    );
+
+    if (isOwner) {
+      await db.companyRole.delete({
+        where: {
+          id,
+        },
+      });
+    } else {
+      throw new Error("Este usuario no tiene el permiso");
+    }
   } catch (error) {
-    console.log(error)
-    throw new Error("error deleteCompanyRoleAction");
+    throw new Error(
+      error instanceof Error ? error.message : "Error deleteCompanyRoleAction"
+    );
   }
 }
 
-export async function createCompanyRoleAction(name: string, description: string, permissions: PermissionAction[], companyId: string){
+export async function createCompanyRoleAction(
+  name: string,
+  description: string,
+  permissions: PermissionAction[],
+  companyId: string
+) {
   try {
-    await db.companyRole.create({
-      data:{
-        name,
-        description,
-        permissions,
-        companyId
-      }
-    })
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
+    }
+    const userData = await db.user.findUnique({
+      where: {
+        email: session.user?.email,
+      },
+      select: {
+        email: true,
+        createdCompanies: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (!userData) {
+      throw new Error("No existe informacion del usuario");
+    }
+    const isOwner = userData.createdCompanies.some(
+      (company) => company.id === companyId
+    );
+    if (isOwner) {
+      await db.companyRole.create({
+        data: {
+          name,
+          description,
+          permissions,
+          companyId,
+        },
+      });
+    } else {
+      throw new Error("Este usuario no tiene el permiso");
+    }
   } catch (error) {
-    console.log(error)
-    throw new Error("error createCompanyRoleAction");
+    throw new Error(
+      error instanceof Error ? error.message : "Error createCompanyRoleAction"
+    );
   }
 }

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PermissionAction } from "@prisma/client";
-import { Save } from "lucide-react";
+import { ArrowLeftCircleIcon, LoaderCircle, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,59 +17,14 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { permissionsOptions } from "../../_components/permissions-options";
 import { formSchemaRole } from "../../_components/schema-role";
-
-// const permissionsOptions= [
-//     { id: 'VIEW_DASHBOARD', label: 'Ver Dashboard' },
-
-//     { id: 'VIEW_PRODUCTS', label: 'Ver Productos' },
-//     { id: 'CREATE_PRODUCT', label: 'Crear Producto' },
-//     { id: 'EDIT_PRODUCT', label: 'Editar Producto' },
-//     { id: 'DELETE_PRODUCT', label: 'Eliminar Producto' },
-
-//     { id: 'VIEW_CATEGORIES', label: 'Ver Categorías' },
-//     { id: 'CREATE_CATEGORY', label: 'Crear Categoría' },
-//     { id: 'EDIT_CATEGORY', label: 'Editar Categoría' },
-//     { id: 'DELETE_CATEGORY', label: 'Eliminar Categoría' },
-
-//     { id: 'VIEW_PRESENTATIONS', label: 'Ver Presentaciones' },
-//     { id: 'CREATE_PRESENTATION', label: 'Crear Presentación' },
-//     { id: 'EDIT_PRESENTATION', label: 'Editar Presentación' },
-//     { id: 'DELETE_PRESENTATION', label: 'Eliminar Presentación' },
-
-//     { id: 'VIEW_ORDERS', label: 'Ver Ordenes' },
-//     { id: 'CREATE_ORDER', label: 'Crear Orden' },
-//     { id: 'EDIT_ORDER', label: 'Editar Orden' },
-//     { id: 'DELETE_ORDER', label: 'Eliminar Orden' },
-
-//     { id: 'VIEW_ROOMS', label: 'Ver Salas' },
-//     { id: 'CREATE_ROOM', label: 'Crear Sala' },
-//     { id: 'EDIT_ROOM', label: 'Editar Sala' },
-//     { id: 'DELETE_ROOM', label: 'Eliminar Sala' },
-
-//     { id: 'VIEW_TABLES', label: 'Ver Mesas' },
-//     { id: 'CREATE_TABLE', label: 'Crear Mesa' },
-//     { id: 'EDIT_TABLE', label: 'Editar Mesa' },
-//     { id: 'DELETE_TABLE', label: 'Eliminar Mesa' },
-  
-//     { id: 'VIEW_COMPANY', label: 'Ver Empresa' },
-//   ];
-
-// const formSchema = z.object({
-//   name: z.string().min(1),
-//   description: z.string(),
-//   permissions: z.array(z.string()).refine((value) => value.some((item) => item), {
-//     message: "You have to select at least one item.",
-//   }),
-// });
-
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CreateRoleForm = () => {
 
     const [isLoading, setIsLoading] = useState(false);
-    const title = "Crear Rol";
-    const description = "Agregar un nuevo Rol";
     const router = useRouter()
     const params = useParams();
+    const isMobile = useIsMobile();
 
     const form = useForm<z.infer<typeof formSchemaRole>>({
         resolver: zodResolver(formSchemaRole),
@@ -96,17 +51,27 @@ const CreateRoleForm = () => {
           setIsLoading(false);
         }
     };
+    const handleClickBack = () => {
+      router.push(`/alzu/${params.companyId}/roles`);
+    };
 
 
   return (
     <>
     <div className="flex items-center justify-center">
-        <Heading title={title} description={description} />
+        <Heading title="Nuevo Rol" description="Agregar un nuevo Rol" />
+        <ArrowLeftCircleIcon
+          className={` ${
+            isMobile ? "mx-2 w-8 h-8" : "mx-4 w-12 h-12"
+          } cursor-pointer `}
+          onClick={() => handleClickBack()}
+        />
     </div>
     <Separator />
     <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mx-16">
-          <FormField
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+        <div className="grid grid-cols-1 gap-8 sm:p-8">
+        <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
@@ -200,9 +165,20 @@ const CreateRoleForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">
-            <Save /> Guardar
-        </Button>
+
+        <div className="flex items-center justify-center gap-8 sm:px-8">
+            <Button disabled={isLoading} type="submit" size={"sm"} className={`${isMobile && "w-full"}`}>
+              {isLoading ? (
+                <LoaderCircle className="mr-2 h-4 w-4 animate-spin"/>
+              ):(
+                <Save className="mr-2 h-4 w-4 " />
+              )}
+              Crear Rol
+            </Button>
+            </div>
+
+        </div>
+       
         </form>
       </Form>
     </>

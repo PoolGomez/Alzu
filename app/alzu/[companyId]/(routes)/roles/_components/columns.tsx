@@ -9,7 +9,7 @@ import { CellAction } from "./cell-action"
 export type RoleColumns = {
     id: string,
     name: string,
-    description: string | null,
+    description: string,
     permissions: PermissionAction[],
     createdAt: string,
 }

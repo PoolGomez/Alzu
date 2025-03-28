@@ -147,7 +147,7 @@ model UserSubcription {
 model CompanyRole {
   id          String        @id @default(uuid())
   name        String       
-  description String?
+  description String
   permissions PermissionAction[] //Json // Almacena los permisos como JSON para rápido acceso
   companyId    String
   company      Company      @relation(fields: [companyId], references: [id])
@@ -215,7 +215,7 @@ enum PermissionAction {
 model Category {
   id String @id @default(uuid())
   name String
-  description String?
+  description String
 
   companyId    String
   company      Company      @relation(fields: [companyId], references: [id])

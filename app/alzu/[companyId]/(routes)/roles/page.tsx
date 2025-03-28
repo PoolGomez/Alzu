@@ -51,7 +51,7 @@ const RolesPage = async ({params}:RolesPageProps) => {
 
   return (
     <div className="flex-col">
-        <div className="flex-1 space-y-5 p-4 pt-4">
+        <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
             <RoleClient data={formattedRoles} />
         </div>
     </div>

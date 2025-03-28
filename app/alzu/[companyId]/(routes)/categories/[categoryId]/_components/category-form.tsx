@@ -1,6 +1,6 @@
 "use client"
 
-import { createCategoryAction } from "@/actions/category-actions";
+import { updateCategoryAction } from "@/actions/category-actions";
 import { Heading } from "@/app/alzu/_components/heading";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Category } from "@prisma/client";
 import { ArrowLeftCircleIcon, LoaderCircle, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -15,73 +16,65 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+interface CategoryFormProps {
+    initialData: Category;
+}
 const formSchema = z.object({
     name: z.string().min(1),
     description: z.string(),
-    companyId: z.string().min(1)
 });
 
-export const CreateCategoryForm = () => {
+  
+export const CategoryForm = ({initialData}: CategoryFormProps) => {
+
     const [isLoading, setIsLoading] = useState(false);
     const params = useParams();
     const router = useRouter();
-    const isMobile = useIsMobile()
+    const isMobile = useIsMobile();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            name:"",
-            description:"",
-            companyId: params.companyId as string
-        },
+        defaultValues: initialData,
     });
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         try {
             setIsLoading(true);
-            await createCategoryAction(data.name, data.description, data.companyId)
-          
-            toast.success("Categorias creada correctamente");
-            setIsLoading(false);
+      
+            await updateCategoryAction(params.categoryId as string, data.name, data.description, params.companyId as string)
+             
+            toast.success("Categoria actualizada");
+      
             router.push(`/alzu/${params.companyId}/categories`);
-    
-        } catch (error) {
-            if (error instanceof Error) {
-                toast.error(error.message);
-            } else {
-                toast.error("Algo salió mal");
-            }
-            setTimeout(() => {
-                setIsLoading(false);
-                router.push(`/alzu/${params.companyId}/categories`);
-            }, 2000);
-        } 
-    };
+      
+          } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+          } finally {
+            router.refresh();
+            setIsLoading(false);
+          }
+    }
 
     const handleClickBack = () => {
         router.push(`/alzu/${params.companyId}/categories`);
       };
-    
-
 
   return (
     <>
+        
         <div className="flex items-center justify-center">
-        <Heading title={"Nueva Categoria"} description={"Crear una nueva categoria"} />
-        <ArrowLeftCircleIcon
-          className={` ${
-            isMobile ? "mx-2 w-8 h-8" : "mx-4 w-12 h-12"
-          } cursor-pointer `}
-          onClick={() => handleClickBack()}
-        />
-      </div>
-      <Separator />
-
+            <Heading title={"Editar Categoria"} description={"Editar una categoria"} />
+            <ArrowLeftCircleIcon
+                className={` ${
+                    isMobile ? "mx-2 w-8 h-8" : "mx-4 w-12 h-12"
+                } cursor-pointer `}
+                onClick={() => handleClickBack()}
+            />
+        </div>
+        <Separator />
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-8"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
           <div className="grid grid-cols-1 gap-8 sm:p-8">
             <FormField
               control={form.control}
@@ -106,11 +99,11 @@ export const CreateCategoryForm = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      placeholder="Ingrese una description"
+                      placeholder="Ingrese una descripción"
                       {...field}
                     />
                   </FormControl>
@@ -118,24 +111,21 @@ export const CreateCategoryForm = () => {
                 </FormItem>
               )}
             />
-            <div className="flex items-center justify-center gap-8 sm:px-8">
+          </div>
+
+          <div className="flex items-center justify-center gap-8 sm:px-8">
             <Button disabled={isLoading} type="submit" size={"sm"} className={`${isMobile && "w-full"}`}>
               {isLoading ? (
                 <LoaderCircle className="mr-2 h-4 w-4 animate-spin"/>
               ):(
                 <Save className="mr-2 h-4 w-4 " />
               )}
-              Crear Categoria
+              Guardar Cambios
             </Button>
-            </div>
-            
           </div>
-
-          
         </form>
       </Form>
-
-
     </>
   )
 }
+

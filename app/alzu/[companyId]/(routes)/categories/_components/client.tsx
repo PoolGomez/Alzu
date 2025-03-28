@@ -2,7 +2,7 @@
 import { Heading } from "@/app/alzu/_components/heading";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeftCircleIcon, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { CategoryColumns } from "./columns";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -27,19 +27,10 @@ const CategoryClient = ({
   const router = useRouter();
   const isMobile = useIsMobile();
 
-  const handleClickBack = () => {
-    router.push(`/alzu/${params.companyId}/categories`);
-  };
-
   return (
     <>
       <div className="flex items-center justify-between">
-        <ArrowLeftCircleIcon
-          className={` ${
-            isMobile ? "mx-2 w-12 h-12" : "mx-4 w-16 h-16"
-          } cursor-pointer `}
-          onClick={() => handleClickBack()}
-        />
+
         <Heading
           title={`Categorias (${data.length})`}
           description="Gestionar las categorias para tu empresa"

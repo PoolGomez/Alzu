@@ -36,7 +36,7 @@ const UsersPage = async({params}:UsersPageProps) => {
 
   return (
     <div className="flex-col">
-        <div className="flex-1 space-y-5 p-8 pt-6">
+        <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
             <UserSearchModalProvider />
             <UsersForm users={users} />
         </div>

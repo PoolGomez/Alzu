@@ -46,7 +46,7 @@ const CategoriesPage = async ({params}:{params: Params}) => {
         
         return (
           <div className="flex-col">
-            <div className="flex-1 space-y-5 p-4 pt-4">
+            <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
                 <CategoryClient data={formattedCategories} isCreate={validateCreateCategory} isEdit={validateEditCategory} isDelete={validateDeleteCategory} isOwner={validateOnwer} />
             </div>
         </div>
