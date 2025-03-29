@@ -1,14 +1,15 @@
 "use client"
 
-import { updateCategoryAction } from "@/actions/category-actions";
+import { updatePresentationAction } from "@/actions/presentation-actions";
 import { Heading } from "@/app/alzu/_components/heading";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Category } from "@prisma/client";
+import { Presentation } from "@prisma/client";
 import { ArrowLeftCircleIcon, LoaderCircle, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,16 +17,16 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-interface CategoryFormProps {
-    initialData: Category;
+interface PresentationFormProps {
+    initialData: Presentation;
 }
 const formSchema = z.object({
-    name: z.string().min(1, "Campo obligatorio"),
-    description: z.string(),
+    name: z.string().min(1,"Campo obligatorio"),
+    isAvailable: z.boolean()
 });
 
   
-export const CategoryForm = ({initialData}: CategoryFormProps) => {
+export const PresentationForm = ({initialData}: PresentationFormProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const params = useParams();
@@ -41,11 +42,11 @@ export const CategoryForm = ({initialData}: CategoryFormProps) => {
         try {
             setIsLoading(true);
       
-            await updateCategoryAction(params.categoryId as string, data.name, data.description, params.companyId as string)
+            await updatePresentationAction(params.presentationId as string, data.name, data.isAvailable, params.companyId as string)
              
-            toast.success("Categoria actualizada");
+            toast.success("Presentación actualizada");
       
-            router.push(`/alzu/${params.companyId}/categories`);
+            router.push(`/alzu/${params.companyId}/presentations`);
       
           } catch (error) {
             console.log(error);
@@ -57,14 +58,14 @@ export const CategoryForm = ({initialData}: CategoryFormProps) => {
     }
 
     const handleClickBack = () => {
-        router.push(`/alzu/${params.companyId}/categories`);
+        router.push(`/alzu/${params.companyId}/presentations`);
       };
 
   return (
     <>
         
         <div className="flex items-center justify-center">
-            <Heading title={"Editar Categoria"} description={"Editar una categoria"} />
+            <Heading title={"Editar Presentación"} description={"Modifica los datos de la presentación"} />
             <ArrowLeftCircleIcon
                 className={` ${
                     isMobile ? "mx-2 w-8 h-8" : "mx-4 w-12 h-12"
@@ -96,21 +97,28 @@ export const CategoryForm = ({initialData}: CategoryFormProps) => {
 
             <FormField
               control={form.control}
-              name="description"
+              name="isAvailable"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Ingrese una descripción"
-                      {...field}
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Disponible</FormLabel>
+                    <FormDescription>
+                      {/* This prodcut will be on home screen under featured
+                      products */}
+                      Esta presentación estará disponible
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />
+
+
           </div>
 
           <div className="flex items-center justify-center gap-8 sm:px-8">

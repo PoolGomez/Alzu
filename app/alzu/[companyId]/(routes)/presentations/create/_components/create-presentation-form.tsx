@@ -1,9 +1,10 @@
 "use client"
 
-import { createCategoryAction } from "@/actions/category-actions";
+import { createPresentationAction } from "@/actions/presentation-actions";
 import { Heading } from "@/app/alzu/_components/heading";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -17,11 +18,11 @@ import { z } from "zod";
 
 const formSchema = z.object({
     name: z.string().min(1,"Campo obligatorio"),
-    description: z.string(),
+    isAvailable: z.boolean(),
     companyId: z.string().min(1)
 });
 
-export const CreateCategoryForm = () => {
+export const CreatePresentationForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const params = useParams();
     const router = useRouter();
@@ -31,7 +32,7 @@ export const CreateCategoryForm = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name:"",
-            description:"",
+            isAvailable: true,
             companyId: params.companyId as string
         },
     });
@@ -39,11 +40,11 @@ export const CreateCategoryForm = () => {
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         try {
             setIsLoading(true);
-            await createCategoryAction(data.name, data.description, data.companyId)
+            await createPresentationAction(data.name, data.isAvailable, data.companyId)
           
-            toast.success("Categorias creada correctamente");
+            toast.success("Presentación creada correctamente");
             setIsLoading(false);
-            router.push(`/alzu/${params.companyId}/categories`);
+            router.push(`/alzu/${params.companyId}/presentations`);
     
         } catch (error) {
             if (error instanceof Error) {
@@ -53,13 +54,13 @@ export const CreateCategoryForm = () => {
             }
             setTimeout(() => {
                 setIsLoading(false);
-                router.push(`/alzu/${params.companyId}/categories`);
+                router.push(`/alzu/${params.companyId}/presentations`);
             }, 2000);
         } 
     };
 
     const handleClickBack = () => {
-        router.push(`/alzu/${params.companyId}/categories`);
+        router.push(`/alzu/${params.companyId}/presentations`);
       };
     
 
@@ -67,7 +68,7 @@ export const CreateCategoryForm = () => {
   return (
     <>
         <div className="flex items-center justify-center">
-        <Heading title={"Nueva Categoria"} description={"Crear una nueva categoria"} />
+        <Heading title={"Nueva Presentación"} description={"Crear una nueva presentación"} />
         <ArrowLeftCircleIcon
           className={` ${
             isMobile ? "mx-2 w-8 h-8" : "mx-4 w-12 h-12"
@@ -103,21 +104,28 @@ export const CreateCategoryForm = () => {
 
             <FormField
               control={form.control}
-              name="description"
+              name="isAvailable"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Ingrese una description"
-                      {...field}
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Disponible</FormLabel>
+                    <FormDescription>
+                      {/* This prodcut will be on home screen under featured
+                      products */}
+                      Esta presentación estará disponible
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />
+
+
             <div className="flex items-center justify-center gap-8 sm:px-8">
             <Button disabled={isLoading} type="submit" size={"sm"} className={`${isMobile && "w-full"}`}>
               {isLoading ? (
@@ -125,7 +133,7 @@ export const CreateCategoryForm = () => {
               ):(
                 <Save className="mr-2 h-4 w-4 " />
               )}
-              Crear Categoria
+              Crear Presentación
             </Button>
             </div>
             
