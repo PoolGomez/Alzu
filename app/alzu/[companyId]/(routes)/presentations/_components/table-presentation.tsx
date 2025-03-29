@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
-import { CellAction } from "./cell-action";
-import { CategoryColumns } from "./columns";
+
+import { PresentationColumns } from "./columns";
 import { ArrowDownAZ, ArrowDownUp, ArrowDownZA} from "lucide-react";
+import { CellAction } from "./cell-action";
+import { Badge } from "@/components/ui/badge";
 
 const highlightText = (text: string, searchTerm: string): React.ReactNode => {
   if (!searchTerm) return text;
@@ -18,25 +20,25 @@ const highlightText = (text: string, searchTerm: string): React.ReactNode => {
   );
 };
 
-interface TableCategoryProps {
+interface TablePresentationProps {
   isOwner: boolean;
   isEdit: boolean;
   isDelete: boolean;
-  data: CategoryColumns[];
+  data: PresentationColumns[];
 }
 
-const TableCategory = ({
+const PresentationTable = ({
   isOwner,
   isEdit,
   isDelete,
   data,
-}: TableCategoryProps) => {
+}: TablePresentationProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [sortField, setSortField] = useState<keyof CategoryColumns | null>(null);
+  const [sortField, setSortField] = useState<keyof PresentationColumns | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const handleSort = (field: keyof CategoryColumns) => {
+  const handleSort = (field: keyof PresentationColumns) => {
     if (sortField === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -45,20 +47,21 @@ const TableCategory = ({
     }
   };
 
-  const sortedCategories = [...data].sort((a, b) => {
+  const sortedPresentations = [...data].sort((a, b) => {
     if (!sortField) return 0;
-    const valueA = a[sortField as keyof CategoryColumns].toString().toLowerCase();
-    const valueB = b[sortField as keyof CategoryColumns].toString().toLowerCase();
+    const valueA = a[sortField as keyof PresentationColumns].toString().toLowerCase();
+    const valueB = b[sortField as keyof PresentationColumns].toString().toLowerCase();
     return sortOrder === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
   });
 
-  const filteredCategories = sortedCategories.filter((category) =>
-    Object.values(category).some((value) =>
-      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPresentations = sortedPresentations.filter((presentation) =>
+    Object.values(presentation).some((value) =>
+      typeof value === "boolean" ? value === true ? ("disponible").includes(searchTerm.toLowerCase()) : ("desactivado").includes(searchTerm.toLowerCase()) : value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    //   value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
-  const getSortIcon = (field: keyof CategoryColumns) => {
+  const getSortIcon = (field: keyof PresentationColumns) => {
     if (sortField !== field) return <ArrowDownUp className="inline ml-2 h-5 w-5" />;
     return sortOrder === "asc" ? <ArrowDownAZ className="inline ml-2 h-5 w-5" /> : <ArrowDownZA className="inline ml-2 h-5 w-5" />;
   };
@@ -79,8 +82,8 @@ const TableCategory = ({
           <thead>
             <tr className="bg-accent border-b">
               <th className="flex items-center justify-start p-3 black-foreground cursor-pointer" onClick={() => handleSort("name")}>Nombre {getSortIcon("name")}</th>
-              <th className="p-3 text-black-foreground hidden md:table-cell cursor-pointer" onClick={() => handleSort("description")}>
-                Descripción {getSortIcon("description")}
+              <th className="p-3 text-black-foreground hidden md:table-cell cursor-pointer" onClick={() => handleSort("isAvailable")}>
+                Estado {getSortIcon("isAvailable")}
               </th>
               <th className="p-3 text-black-foreground text-right md:table-cell">
                 {(isEdit || isDelete || isOwner) && "Acciones"}
@@ -88,17 +91,21 @@ const TableCategory = ({
             </tr>
           </thead>
           <tbody>
-            {filteredCategories.map((category) => (
-              <tr key={category.id} className="border-b hover:bg-accent">
+            {filteredPresentations.map((presentation) => (
+              <tr key={presentation.id} className="border-b hover:bg-accent">
                 <td className="p-3 font-medium text-black-foreground">
-                  {highlightText(category.name, searchTerm)}
+                  {highlightText(presentation.name, searchTerm)}
                 </td>
                 <td className="p-3 text-black-foreground hidden md:table-cell">
-                  {highlightText(category.description, searchTerm)}
+                    {presentation.isAvailable ? (
+                        <Badge>{highlightText("Disponible", searchTerm)}</Badge>
+                    ):(
+                        <Badge variant="destructive">{highlightText("Desactivado", searchTerm)}</Badge>
+                    )}
                 </td>
                 <td className="p-0 text-black-foreground text-right px-4">
                   <CellAction
-                    id={category.id}
+                    id={presentation.id}
                     isOwner={isOwner}
                     isEdit={isEdit}
                     isDelete={isDelete}
@@ -113,4 +120,4 @@ const TableCategory = ({
   );
 };
 
-export default TableCategory;
+export default PresentationTable;

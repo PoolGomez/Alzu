@@ -5,6 +5,10 @@ import { Category } from "@prisma/client";
 
 export async function getCategoriesByCompanyIdAction(companyId: string) {
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
+    }
     const categories = await db.category.findMany({
       where: {
         companyId,

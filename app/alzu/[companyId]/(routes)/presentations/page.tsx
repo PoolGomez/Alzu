@@ -1,17 +1,16 @@
 import { getUsersWithAllCompanies } from "@/actions/user-actions"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import CategoryClient from "./_components/client"
-import { getCategoriesByCompanyIdAction } from "@/actions/category-actions"
-import { CategoryColumns } from "./_components/columns"
+import { PresentationColumns } from "./_components/columns"
 import { format } from "date-fns"
-// import { Category } from "@prisma/client"
+import { getPresentationsByCompanyIdAction } from "@/actions/presentation-actions"
+import PresentationClient from "./_components/client"
 
 type Params = Promise <{
     companyId: string
-  }>
+}>
 
-const CategoriesPage = async ({params}:{params: Params}) => {
+const PresentationsPage = async ({params}:{params: Params}) => {
     const session = await auth()
     if(!session?.user?.email){
         console.log("No hay session")
@@ -27,16 +26,16 @@ const CategoriesPage = async ({params}:{params: Params}) => {
     const {companyId} = await params;
     
     const validateOnwer = userData.createdCompanies.some((company)=>company.id === companyId)
-    const validatePermissions = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("VIEW_CATEGORIES"))
-    const validateCreateCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("CREATE_CATEGORY"))
-    const validateEditCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("EDIT_CATEGORY"))
-    const validateDeleteCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("DELETE_CATEGORY"))
+    const validatePermissions = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("VIEW_PRESENTATIONS"))
+    const validateCreateCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("CREATE_PRESENTATION"))
+    const validateEditCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("EDIT_PRESENTATION"))
+    const validateDeleteCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("DELETE_PRESENTATION"))
 
-    const categories = await getCategoriesByCompanyIdAction(companyId)
-    const formattedCategories : CategoryColumns[] = categories.map(item => ({
+    const presentations = await getPresentationsByCompanyIdAction(companyId)
+    const formattedPresentations : PresentationColumns[] = presentations.map(item => ({
         id: item.id,
         name: item.name,
-        description: item?.description,
+        isAvailable: item.isAvailable,
         createdAt: item.createdAt ? format(item.createdAt,"MMMM do, yyyy") : "",
         updatedAt: item.updatedAt ? format(item.updatedAt,"MMMM do, yyyy") : ""
     }))
@@ -47,7 +46,7 @@ const CategoriesPage = async ({params}:{params: Params}) => {
         return (
           <div className="flex-col">
             <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
-                <CategoryClient data={formattedCategories} isCreate={validateCreateCategory} isEdit={validateEditCategory} isDelete={validateDeleteCategory} isOwner={validateOnwer} />
+                <PresentationClient data={formattedPresentations} isCreate={validateCreateCategory} isEdit={validateEditCategory} isDelete={validateDeleteCategory} isOwner={validateOnwer} />
             </div>
         </div>
           
@@ -58,4 +57,4 @@ const CategoriesPage = async ({params}:{params: Params}) => {
       }
 }
 
-export default CategoriesPage
+export default PresentationsPage

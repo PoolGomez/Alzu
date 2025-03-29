@@ -1,8 +1,8 @@
 
-export type CategoryColumns = {
+export type PresentationColumns = {
     id: string,
     name: string,
-    description: string,
+    isAvailable: boolean,
     createdAt: string,
     updatedAt: string,
 }
