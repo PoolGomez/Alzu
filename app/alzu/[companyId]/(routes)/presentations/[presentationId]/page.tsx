@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { Presentation } from "@prisma/client"
 import { getPresentationByIdAction } from "@/actions/presentation-actions"
 import { PresentationForm } from "./_components/presentation-form"
+import { getAllCategoriesByCompanyIdAction } from "@/actions/category-actions"
 
 type Params = Promise <{
     companyId: string,
@@ -30,10 +31,11 @@ const PresentationPage = async ({params}:{params: Params}) => {
       
         if( validateOnwer || validatePermissions){
             console.log("si tiene permiso")
+            const categories = await getAllCategoriesByCompanyIdAction(companyId)
             return (
               <div className="flex-col">
                 <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
-                  <PresentationForm initialData={presentation} />
+                  <PresentationForm initialData={presentation} categories={categories} />
                 </div>
             </div>
               

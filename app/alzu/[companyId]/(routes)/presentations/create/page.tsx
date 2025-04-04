@@ -2,6 +2,7 @@ import { getUsersWithAllCompanies } from "@/actions/user-actions"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { CreatePresentationForm } from "./_components/create-presentation-form"
+import { getAllCategoriesByCompanyIdAction } from "@/actions/category-actions"
 // import { CreateCategoryForm } from "./_components/create-category-form"
 
 type Params = Promise <{
@@ -25,10 +26,11 @@ const CreatePresentationPage = async ({params}:{params: Params}) => {
   
     if( validateOnwer || validatePermissions){
         console.log("si tiene permiso")
+        const categories = await getAllCategoriesByCompanyIdAction(companyId)
         return (
           <div className="flex-col">
             <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
-              <CreatePresentationForm />
+              <CreatePresentationForm categories={categories} />
             </div>
         </div>
           

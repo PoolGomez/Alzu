@@ -3,7 +3,8 @@
 import { updateCategoryAction } from "@/actions/category-actions";
 import { Heading } from "@/app/alzu/_components/heading";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,6 +23,7 @@ interface CategoryFormProps {
 const formSchema = z.object({
     name: z.string().min(1, "Campo obligatorio"),
     description: z.string(),
+    isAvailable: z.boolean(),
 });
 
   
@@ -41,15 +43,18 @@ export const CategoryForm = ({initialData}: CategoryFormProps) => {
         try {
             setIsLoading(true);
       
-            await updateCategoryAction(params.categoryId as string, data.name, data.description, params.companyId as string)
+            await updateCategoryAction(params.categoryId as string, data.name, data.description,data.isAvailable, params.companyId as string)
              
             toast.success("Categoria actualizada");
       
             router.push(`/alzu/${params.companyId}/categories`);
       
           } catch (error) {
-            console.log(error);
-            toast.error("Something went wrong");
+            if( error instanceof Error){
+              toast.error(error.message);
+            }else{
+                toast.error("Something went wrong");
+            }
           } finally {
             router.refresh();
             setIsLoading(false);
@@ -108,6 +113,28 @@ export const CategoryForm = ({initialData}: CategoryFormProps) => {
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isAvailable"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Disponible</FormLabel>
+                    <FormDescription>
+                      {/* This prodcut will be on home screen under featured
+                      products */}
+                      Esta categoria estará disponible
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />

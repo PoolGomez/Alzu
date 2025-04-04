@@ -2,7 +2,7 @@ import { getUsersWithAllCompanies } from "@/actions/user-actions"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import CategoryClient from "./_components/client"
-import { getCategoriesByCompanyIdAction } from "@/actions/category-actions"
+import { getAllCategoriesByCompanyIdAction } from "@/actions/category-actions"
 import { CategoryColumns } from "./_components/columns"
 import { format } from "date-fns"
 // import { Category } from "@prisma/client"
@@ -32,7 +32,7 @@ const CategoriesPage = async ({params}:{params: Params}) => {
     const validateEditCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("EDIT_CATEGORY"))
     const validateDeleteCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("DELETE_CATEGORY"))
 
-    const categories = await getCategoriesByCompanyIdAction(companyId)
+    const categories = await getAllCategoriesByCompanyIdAction(companyId)
     const formattedCategories : CategoryColumns[] = categories.map(item => ({
         id: item.id,
         name: item.name,

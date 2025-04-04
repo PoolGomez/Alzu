@@ -4,40 +4,47 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import React from 'react'
+import { ProductColumns } from './columns'
+import { useIsMobile } from '@/hooks/use-mobile'
+import ProductTable from './table-product'
 
-const ProductClient = ({isCreate}:{isCreate: boolean}) => {
+interface PreoductClientProps {
+  data: ProductColumns[];
+  isCreate: boolean;
+  isEdit: boolean;
+  isDelete: boolean;
+  isOwner: boolean;
+}
+
+const ProductClient = ({data, isCreate, isEdit, isDelete, isOwner}:PreoductClientProps) => {
     const params = useParams()
     const router = useRouter()
+    const isMobile = useIsMobile();
+
   return (
     <>
       <div className="flex items-center justify-between">
             <Heading 
-                // title={`Roles (${data.length})`} 
-                title={`Products`} 
-                description="Gestionar roles para tu empresa"
+                title={`Products (${data.length})`} 
+                description="Gestionar productos para tu empresa"
             />
             {
-                isCreate && (
-                    <Button onClick={()=>router.push(`/alzu/${params.companyId}/products/create`)}>
+                (isCreate || isOwner) && (
+                    <Button onClick={()=>router.push(`/alzu/${params.companyId}/products/create`)} className='cursor-pointer'>
                         <Plus className="h-4 w-4 mr-2" />
-                        Nuevo Producto
+                        {!isMobile && "Crear Producto"}
                     </Button>
                 )
             }
-            {/* <Button onClick={()=>router.push(`/alzu/${params.companyId}/products/create`)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nuevo Producto
-            </Button> */}
+
         </div>
         <Separator />
-        {/* {
-            !isMobile ? (
-                <DataTable searchKey="name" columns={columns} data={data}/>
-            ):(
-                <DataTable searchKey="name" columns={columns_mobile} data={data}/>
-            )
-        } */}
+        <ProductTable 
+            isOwner={isOwner}
+            isEdit={isEdit}
+            isDelete={isDelete}
+            data={data}
+        />
         
     </>
   )

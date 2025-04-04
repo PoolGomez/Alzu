@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Presentation } from "@prisma/client";
+import { Category, Presentation } from "@prisma/client";
 import { ArrowLeftCircleIcon, LoaderCircle, Save } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,14 +21,17 @@ import { z } from "zod";
 
 interface PresentationFormProps {
     initialData: Presentation;
+    categories: Category[]
 }
 const formSchema = z.object({
     name: z.string().min(1,"Campo obligatorio"),
-    isAvailable: z.boolean()
+    description: z.string().min(1, "Campo obligatorio"),
+    isAvailable: z.boolean(),
+    categoryId: z.string().min(1, "Campo obligatorio"),
 });
 
   
-export const PresentationForm = ({initialData}: PresentationFormProps) => {
+export const PresentationForm = ({initialData, categories}: PresentationFormProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const params = useParams();
@@ -42,15 +47,18 @@ export const PresentationForm = ({initialData}: PresentationFormProps) => {
         try {
             setIsLoading(true);
       
-            await updatePresentationAction(params.presentationId as string, data.name, data.isAvailable, params.companyId as string)
+            await updatePresentationAction(params.presentationId as string, data.name, data.description,data.isAvailable, data.categoryId, params.companyId as string)
              
             toast.success("Presentación actualizada");
       
             router.push(`/alzu/${params.companyId}/presentations`);
       
           } catch (error) {
-            console.log(error);
-            toast.error("Something went wrong");
+            if( error instanceof Error){
+                toast.error(error.message);
+            }else{
+                toast.error("Something went wrong");
+            }
           } finally {
             router.refresh();
             setIsLoading(false);
@@ -91,6 +99,59 @@ export const PresentationForm = ({initialData}: PresentationFormProps) => {
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descripción</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Ingrese una descripción"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  {/* <FormDescription>
+                Descripción referencial de la presentación
+              </FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <Select
+                    disabled={isLoading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Seleccione una categoria"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />

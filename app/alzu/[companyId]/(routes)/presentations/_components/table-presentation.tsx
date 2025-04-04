@@ -82,6 +82,7 @@ const PresentationTable = ({
           <thead>
             <tr className="bg-accent border-b">
               <th className="flex items-center justify-start p-3 black-foreground cursor-pointer" onClick={() => handleSort("name")}>Nombre {getSortIcon("name")}</th>
+              <th className="items-center justify-start p-3 black-foreground cursor-pointer" onClick={() => handleSort("categoryName")}>Categoria {getSortIcon("categoryName")}</th>
               <th className="p-3 text-black-foreground hidden md:table-cell cursor-pointer" onClick={() => handleSort("isAvailable")}>
                 Estado {getSortIcon("isAvailable")}
               </th>
@@ -95,6 +96,9 @@ const PresentationTable = ({
               <tr key={presentation.id} className="border-b hover:bg-accent">
                 <td className="p-3 font-medium text-black-foreground">
                   {highlightText(presentation.name, searchTerm)}
+                </td>
+                <td className="p-3 font-medium text-black-foreground">
+                  {highlightText(presentation.categoryName, searchTerm)}
                 </td>
                 <td className="p-3 text-black-foreground hidden md:table-cell">
                     {presentation.isAvailable ? (

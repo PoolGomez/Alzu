@@ -14,8 +14,16 @@ export async function getPresentationsByCompanyIdAction(companyId: string) {
       where: {
         companyId,
       },
+      include:{
+        category:{
+          select:{
+            name:true
+          }
+        }
+      }
     });
-    return presentations as Presentation[];
+    return presentations 
+    // as Presentation[];
   } catch (error) {
     throw new Error(
       error instanceof Error
@@ -50,7 +58,9 @@ export async function getPresentationByIdAction(presentationId: string) {
 
 export async function createPresentationAction(
     name: string,
+    description:string,
     isAvailable: boolean,
+    categoryId: string,
     companyId: string
   ) {
     try {
@@ -96,6 +106,8 @@ export async function createPresentationAction(
         await db.presentation.create({
           data: {
             name,
+            description,
+            categoryId,
             companyId,
             isAvailable
           },
@@ -113,7 +125,9 @@ export async function createPresentationAction(
 export async function updatePresentationAction(
     presentationId: string,
     name: string,
+    description:string,
     isAvailable: boolean,
+    categoryId: string,
     companyId: string
   ) {
     try {
@@ -162,7 +176,9 @@ export async function updatePresentationAction(
           },
           data: {
             name,
+            description,
             isAvailable,
+            categoryId
           },
         });
       } else {

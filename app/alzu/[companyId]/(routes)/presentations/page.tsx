@@ -31,17 +31,22 @@ const PresentationsPage = async ({params}:{params: Params}) => {
     const validateEditCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("EDIT_PRESENTATION"))
     const validateDeleteCategory = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("DELETE_PRESENTATION"))
 
-    const presentations = await getPresentationsByCompanyIdAction(companyId)
-    const formattedPresentations : PresentationColumns[] = presentations.map(item => ({
-        id: item.id,
-        name: item.name,
-        isAvailable: item.isAvailable,
-        createdAt: item.createdAt ? format(item.createdAt,"MMMM do, yyyy") : "",
-        updatedAt: item.updatedAt ? format(item.updatedAt,"MMMM do, yyyy") : ""
-    }))
+    
 
     if( validateOnwer || validatePermissions){
         console.log("si tiene permiso")
+        const presentations = await getPresentationsByCompanyIdAction(companyId)
+        const formattedPresentations : PresentationColumns[] = presentations.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            companyId: item.companyId,
+            categoryId: item.categoryId,
+            categoryName: item.category.name,
+            isAvailable: item.isAvailable,
+            createdAt: item.createdAt ? format(item.createdAt,"MMMM do, yyyy") : "",
+            updatedAt: item.updatedAt ? format(item.updatedAt,"MMMM do, yyyy") : ""
+        }))
         
         return (
           <div className="flex-col">

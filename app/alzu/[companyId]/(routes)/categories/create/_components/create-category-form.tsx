@@ -3,7 +3,8 @@
 import { createCategoryAction } from "@/actions/category-actions";
 import { Heading } from "@/app/alzu/_components/heading";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,6 +19,7 @@ import { z } from "zod";
 const formSchema = z.object({
     name: z.string().min(1,"Campo obligatorio"),
     description: z.string(),
+    isAvailable: z.boolean(),
     companyId: z.string().min(1)
 });
 
@@ -32,6 +34,7 @@ export const CreateCategoryForm = () => {
         defaultValues: {
             name:"",
             description:"",
+            isAvailable:true,
             companyId: params.companyId as string
         },
     });
@@ -39,7 +42,7 @@ export const CreateCategoryForm = () => {
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         try {
             setIsLoading(true);
-            await createCategoryAction(data.name, data.description, data.companyId)
+            await createCategoryAction(data.name, data.description, data.companyId , data.isAvailable )
           
             toast.success("Categorias creada correctamente");
             setIsLoading(false);
@@ -118,6 +121,29 @@ export const CreateCategoryForm = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="isAvailable"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-3">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Disponible</FormLabel>
+                    <FormDescription>
+                      {/* This prodcut will be on home screen under featured
+                      products */}
+                      Esta categoria estará disponible
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+
             <div className="flex items-center justify-center gap-8 sm:px-8">
             <Button disabled={isLoading} type="submit" size={"sm"} className={`${isMobile && "w-full"}`}>
               {isLoading ? (

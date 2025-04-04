@@ -61,7 +61,7 @@ const DashboardLayout = async ({children, params}: DashboardLayout) => {
 
     // const permissions = (await getPermissionCompanyUser(userData.id, companyId)) as CompanyUserWithRolePermissions
     const companiesUserRole = userData.companiesUserRoles.find((cur)=> cur.companyId === companyId) // ?.role.permissions 
-    console.log("companiesUserRole: ",companiesUserRole)
+    
     if(companiesUserRole){
       companiesUserRole.role.permissions.map((item)=> permissions.push(item))
     }

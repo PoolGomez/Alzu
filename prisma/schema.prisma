@@ -222,6 +222,7 @@ model Category {
   id String @id @default(uuid())
   name String
   description String
+  isAvailable Boolean @default(true)
 
   companyId    String
   company      Company      @relation(fields: [companyId], references: [id])
@@ -231,15 +232,17 @@ model Category {
 
   @@unique([companyId, name])
   products Product[]
+  presentation Presentation[]
 }
 
 model Product {
-  id String @id @default(uuid())
+  id String @id @default(cuid())
   companyId String
   categoryId String
   name String
   description String
   imageUrl String
+  price Float
   isAvailable Boolean @default(true)
 
   createdAt DateTime @default(now())
@@ -247,46 +250,49 @@ model Product {
 
   company Company @relation(fields:[companyId], references:[id])
   category Category @relation(fields:[categoryId], references:[id])
-  productPresentations ProductPresentation[]
-}
-model ProductPresentation {
-  id String @id @default(uuid())
-  presentationId String
-  productId String
-  description String
-  imageUrl String
-  price Int
-  isAvailable Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  product Product @relation(fields: [productId], references: [id])
   orderItems OrderItem[]
 }
+// model ProductPresentation {
+//   id String @id @default(uuid())
+//   presentationId String
+//   productId String
+//   description String
+//   imageUrl String
+//   price Int
+//   isAvailable Boolean @default(true)
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   product Product @relation(fields: [productId], references: [id])
+//   orderItems OrderItem[]
+// }
 
 model Presentation {
   id String @id @default(uuid())
   name String
+  description String
+  categoryId String
   isAvailable Boolean @default(true)
   companyId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  category Category @relation(fields: [categoryId], references: [id])
   company Company @relation(fields: [companyId], references: [id])
   
 }
 model OrderItem {
   id String @id @default(uuid())
   orderId String
-  productPresentationId String
+  productId String
   quantity Int
   price Int
   subtotal Int // quantity * price
 
   order Order @relation(fields:[orderId], references:[id])
-  productPresentation ProductPresentation @relation(fields:[productPresentationId], references:[id])
+  product Product @relation(fields:[productId], references:[id])
 }
 
 model Order {

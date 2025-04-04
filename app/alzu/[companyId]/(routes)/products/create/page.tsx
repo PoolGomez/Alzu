@@ -1,6 +1,8 @@
 import { getUsersWithAllCompanies } from "@/actions/user-actions"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { CreateProductForm } from "./_components/create-product-form"
+import { getAllCategoriesByCompanyIdAction } from "@/actions/category-actions"
 
 type Params = Promise <{
   companyId: string
@@ -21,15 +23,14 @@ const CreateProductPage = async ({params}:{params: Params}) => {
   const validateOnwer = userData.createdCompanies.some((company)=>company.id === companyId)
   const validatePermissions = userData.companiesUserRoles.some((item)=>item.role.permissions.includes("CREATE_PRODUCT"))
 
+
   if( validateOnwer || validatePermissions){
     console.log("si tiene permiso")
+    const categories = await getAllCategoriesByCompanyIdAction(companyId)
     return (
       <div className="flex-col">
-        <div className="flex-1 space-y-5 p-4 pt-4">
-          Create Product
-            {/* <ProductClient 
-             data={formattedRoles} 
-            /> */}
+        <div className="flex-1 space-y-5 p-4 md:p-8 pt-4 md:pt-6">
+          <CreateProductForm categories={categories} />
         </div>
     </div>
       

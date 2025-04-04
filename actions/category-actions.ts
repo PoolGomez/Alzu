@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { Category } from "@prisma/client";
 
-export async function getCategoriesByCompanyIdAction(companyId: string) {
+export async function getAllCategoriesByCompanyIdAction(companyId: string) {
   try {
     const session = await auth();
     if (!session?.user?.email) {
@@ -19,10 +19,11 @@ export async function getCategoriesByCompanyIdAction(companyId: string) {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Error getCategoriesByCompanyIdAction"
+        : "Error getAllCategoriesByCompanyIdAction"
     );
   }
 }
+
 export async function deleteCategoryByIdAction(
   categoryId: string,
   companyId: string
@@ -79,7 +80,7 @@ export async function deleteCategoryByIdAction(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Error getCategoriesByCompanyIdAction"
+        : "Error deleteCategoryByIdAction"
     );
   }
 }
@@ -87,7 +88,8 @@ export async function deleteCategoryByIdAction(
 export async function createCategoryAction(
   name: string,
   description: string,
-  companyId: string
+  companyId: string,
+  isAvailable: boolean
 ) {
   try {
     const session = await auth();
@@ -134,6 +136,7 @@ export async function createCategoryAction(
           name,
           description,
           companyId,
+          isAvailable
         },
       });
     } else {
@@ -156,6 +159,7 @@ export async function getCategoryByIdAction(categoryId: string) {
       select: {
         name: true,
         description: true,
+        isAvailable: true
       },
       where: {
         id: categoryId,
@@ -173,6 +177,7 @@ export async function updateCategoryAction(
   categoryId: string,
   name: string,
   description: string,
+  isAvailable: boolean,
   companyId: string
 ) {
   try {
@@ -222,6 +227,7 @@ export async function updateCategoryAction(
         data: {
           name,
           description,
+          isAvailable
         },
       });
     } else {
