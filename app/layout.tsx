@@ -6,7 +6,7 @@ import { ToastProvider } from "@/components/modal/toast-provider";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
-// import { auth } from "@/auth";
+import { auth } from "@/auth";
 // import Script from "next/script";
 
 const poppins = Poppins({
@@ -24,7 +24,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const session = await auth();
+  const session = await auth();
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -37,7 +37,7 @@ export default async function RootLayout({
         /> */}
         
         <SessionProvider 
-        // session={session}
+        session={session}
         >
         <ThemeProvider
             attribute="class"

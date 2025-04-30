@@ -55,8 +55,6 @@ export const POST = async ( req : Request ) => {
         //     updateAt: serverTimestamp()
         // })
 
-        console.log("companyData: ", companyData)
-        console.log("companyRef: ", companyRef)
         return NextResponse.json({id, ...companyData});
 
     } catch (error) {

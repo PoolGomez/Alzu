@@ -37,8 +37,9 @@ import { z } from "zod";
 interface CreateProductFormProps {
   categories: Category[];
 }
-const urlDomainValid = "https://res.cloudinary.com/"
-const allowedExtensions = [".jpg",".jpeg",".png"]
+const urlDomainValid = "https://res.cloudinary.com"
+const allowedExtensions = [".jpg",".png",".jpeg"]
+const imageInvalid = "/img/no-image.jpg"
 
 const validateImageUrl = async (url: string) => {
   const isValid = url.startsWith(urlDomainValid) &&
@@ -53,30 +54,6 @@ const validateImageUrl = async (url: string) => {
     return false;
   }
 };
-
-// const imageUrlSchema = z.string().refine(
-//   async (url) => {
-//     const isValidUrl =
-//       url.startsWith(urlDomainValid) &&
-//       (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".jpeg"));
-
-//     if (!isValidUrl) {
-//       return false;
-//     }
-
-//     try {
-//       const response = await axios.head(url);
-//       return response.status === 200;
-//     } catch (error) {
-//       console.log(error);
-//       return false;
-//     }
-//   },
-//   {
-//     message:
-//       "El link no cumple las condiciones establecidas. Ingrese una URL válida",
-//   }
-// );
 
 const formSchema = z.object({
   name: z.string().min(1, "Campo obligatorio"),
@@ -104,10 +81,9 @@ export const CreateProductForm = ({ categories }: CreateProductFormProps) => {
   const router = useRouter();
   const isMobile = useIsMobile();
 
-  // const [imageUrl, setImageUrl] = useState(form.getValues("imageUrl") || "");
   const [imageUrl, setImageUrl] = useState("");
   const [preview, setPreview] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState("/img/no-image.jpg");
+  const [previewUrl, setPreviewUrl] = useState(imageInvalid);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -157,12 +133,10 @@ export const CreateProductForm = ({ categories }: CreateProductFormProps) => {
 
   const handleClickPreview = async () => {
     try {
-      //  await imageUrlSchema.parseAsync(imageUrl);
-      // setPreviewUrl(imageUrl);
       const valid = await validateImageUrl(imageUrl);
-      setPreviewUrl(valid ? imageUrl : "/img/no-image.jpg");
+      setPreviewUrl(valid ? imageUrl : imageInvalid);
     } catch {
-      setPreviewUrl("/img/no-image.jpg");
+      setPreviewUrl(imageInvalid);
     }
     setPreview(true);
   };
@@ -317,18 +291,9 @@ export const CreateProductForm = ({ categories }: CreateProductFormProps) => {
                             field.onChange(e);
                             setImageUrl(e.target.value);
                             setPreview(false);
-                            // console.log("imageUrl:",e.target.value)
                           }}
                         />
                       </FormControl>
-                      {/* <FormDescription>
-                      <span className="text-xs">
-                        Condiciones: <br/>
-                        - El link debe ser de un imagen subida en <a target="_blank" href="https://cloudinary.com/" className="text-blue-600" >cloudinary.com</a>  <br/>
-                        - Los formatos permitidos son: .jpg, .jpeg, .png
-                      </span>
-                      
-                    </FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -338,7 +303,7 @@ export const CreateProductForm = ({ categories }: CreateProductFormProps) => {
                   <div className="text-sm text-gray-600 w-full sm:w-2/3">
                     <p className="mb-1 font-medium">Condiciones:</p>
                     <ul className="list-disc list-inside pb-4">
-                      <li>Debe ser un link de una imagen subida en <a href="https://cloudinary.com" className="text-blue-600">Cloudinary</a></li>
+                      <li>Debe ser un link de una imagen subida en <a href="https://cloudinary.com" target="_blank" className="text-blue-600">Cloudinary</a></li>
                       <li>Formatos permitidos: <span className="font-medium">.jpg, .jpeg, .png</span></li>
                     </ul>
 
@@ -363,13 +328,12 @@ export const CreateProductForm = ({ categories }: CreateProductFormProps) => {
                         width={200}
                         height={200}
                         onError={() => {
-                          setPreviewUrl("/img/no-image.jpg");
-                          setImageUrl("/img/no-image.jpg");
+                          setPreviewUrl(imageInvalid);
+                          setImageUrl(imageInvalid);
                         }}
                       />
                     )}
 
-                    {/* </CardContent> */}
                   </div>
                 </div>
               </div>

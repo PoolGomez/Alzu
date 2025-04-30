@@ -9,14 +9,26 @@ export interface UserSearch {
 }
 
 export type UserWithAllCompanies = Prisma.UserGetPayload<{
+  
   include:{
+    email: true,
     companiesUserRoles : {
       include:{
         company: true,
-        role:true,
+        role:{
+          select:{
+            permissions: true
+          }
+        },
       }
     },
-    createdCompanies: true,
+    createdCompanies: true
+    // {
+    //   select:{
+    //     id:true,
+    //     name:true,
+    //   }
+    // },
   }
 }>
 

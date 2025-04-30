@@ -1,0 +1,112 @@
+"use client";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Copy, Edit, Trash } from "lucide-react";
+import toast from "react-hot-toast";
+import { AlertModal } from "@/components/modal/alert-modal";
+import { deleteRoomByIdAction } from "@/actions/room-actions";
+
+interface CellActionProps {
+  id: string;
+  isEdit: boolean;
+  isDelete: boolean;
+  isOwner: boolean;
+  children: React.ReactNode;
+}
+export const CellActionMobile = ({
+  id,
+  isEdit,
+  isDelete,
+  isOwner,
+  children
+}: CellActionProps) => {
+  const router = useRouter();
+  const params = useParams();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const onCopy = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast.success("ID de sala copiado en el portapapeles");
+  };
+
+  const onDelete = async () => {
+    try {
+      setIsLoading(true);
+      await deleteRoomByIdAction(id, params.companyId as string)
+      toast.success("Sala Eliminada");
+      setIsLoading(false);
+      setOpen(false);
+      location.reload();
+      router.push(`/alzu/${params.companyId}/rooms`);
+
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Algo salió mal");
+      }
+
+      setIsLoading(false);
+      setOpen(false);
+
+      setTimeout(() => {
+            location.reload();
+            router.push(`/alzu/${params.companyId}/rooms`);
+      }, 2000); // 2000 ms = 2 segundos (ajusta este valor si cambias la duración del toast)
+
+    }
+  };
+
+  return (
+    <>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+        loading={isLoading}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          {/* <Button className="h-8 w-8 " variant={"ghost"}>
+            <span className="sr-only">Open</span>
+            <MoreVertical className="h-4 w-4" />
+          </Button> */}
+          {children}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+
+          <DropdownMenuItem onClick={() => onCopy(id)}>
+            <Copy className="h-4 w-4 mr-2" />
+            Copiar Id
+          </DropdownMenuItem>
+          {(isOwner || isEdit) && (
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(`/alzu/${params.companyId}/rooms/${id}`)
+              }
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Editar
+            </DropdownMenuItem>
+          )}
+          {(isOwner || isDelete) && (
+            <DropdownMenuItem onClick={() => setOpen(true)}>
+              <Trash className="h-4 w-4 mr-2" />
+              Borrar
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  );
+};

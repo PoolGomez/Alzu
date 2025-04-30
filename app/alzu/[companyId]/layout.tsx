@@ -32,9 +32,9 @@ const DashboardLayout = async ({children, params}: DashboardLayout) => {
       //   id:true,
       //   email: true,
       // },
-      omit:{
-        password: true
-      },
+      // omit:{
+      //   password: true
+      // },
       where:{
         email: session.user.email
       },
@@ -46,6 +46,7 @@ const DashboardLayout = async ({children, params}: DashboardLayout) => {
           }
         },
         createdCompanies: true
+        
       }
     })  ) as UserWithAllCompanies
     

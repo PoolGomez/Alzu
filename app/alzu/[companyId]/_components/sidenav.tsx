@@ -32,9 +32,9 @@ export const SideNav = ({userId, currentCompany, permissions}:SidenavProps) => {
         //     permission: "VIEW_COMPANY"
         // },
         {
-            href : `/alzu/dashboard/${params.companyId}`,
+            href : `/alzu/${params.companyId}/dashboard`,
             label :"Dashboard",
-            active : pathname === `/alzu/dashboard/${params.companyId}`,
+            active : pathname === `/alzu/${params.companyId}/dashboard`,
             icon: LayoutDashboard,
             permission: "VIEW_DASHBOARD"
         },

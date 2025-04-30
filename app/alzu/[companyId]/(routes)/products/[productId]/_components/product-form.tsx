@@ -38,8 +38,9 @@ interface ProductFormProps {
   initialData: Product;
   categories: Category[];
 }
-const urlDomainValid = "https://res.cloudinary.com/";
-const allowedExtensions = [".jpg", ".jpeg", ".png"];
+const urlDomainValid = "https://res.cloudinary.com"
+const allowedExtensions = [".jpg",".png",".jpeg"]
+const imageInvalid = "/img/no-image.jpg"
 
 const validateImageUrl = async (url: string) => {
   const isValid =
@@ -95,7 +96,7 @@ export const ProductForm = ({ initialData, categories }: ProductFormProps) => {
 
   const [imageUrl, setImageUrl] = useState(form.getValues("imageUrl") || "");
   const [preview, setPreview] = useState(imageUrl!=="" ? true : false);
-  const [previewUrl, setPreviewUrl] = useState(form.getValues("imageUrl") || "/img/no-image.jpg");
+  const [previewUrl, setPreviewUrl] = useState(form.getValues("imageUrl") || imageInvalid);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -133,12 +134,10 @@ export const ProductForm = ({ initialData, categories }: ProductFormProps) => {
 
   const handleClickPreview = async () => {
     try {
-      //  await imageUrlSchema.parseAsync(imageUrl);
-      // setPreviewUrl(imageUrl);
       const valid = await validateImageUrl(imageUrl);
-      setPreviewUrl(valid ? imageUrl : "/img/no-image.jpg");
+      setPreviewUrl(valid ? imageUrl : imageInvalid);
     } catch {
-      setPreviewUrl("/img/no-image.jpg");
+      setPreviewUrl(imageInvalid);
     }
     setPreview(true);
   };
@@ -304,6 +303,7 @@ export const ProductForm = ({ initialData, categories }: ProductFormProps) => {
                         Debe ser un link de una imagen subida en{" "}
                         <a
                           href="https://cloudinary.com"
+                          target="_blank"
                           className="text-blue-600"
                         >
                           Cloudinary
@@ -334,13 +334,12 @@ export const ProductForm = ({ initialData, categories }: ProductFormProps) => {
                         width={200}
                         height={200}
                         onError={() => {
-                          setPreviewUrl("/img/no-image.jpg");
-                          setImageUrl("/img/no-image.jpg");
+                          setPreviewUrl(imageInvalid);
+                          setImageUrl(imageInvalid);
                         }}
                       />
                     )}
 
-                    {/* </CardContent> */}
                   </div>
                 </div>
               </div>

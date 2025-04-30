@@ -1,7 +1,9 @@
 "use server"
 
+import { auth } from "@/auth";
 import { db } from "@/lib/db"
 import { CompanyUserRoleWithUser, UserSearch, UserWithAllCompanies } from "@/types-db";
+
 
 
 export const searchUserByEmailAction = async(email: string,sessionEmail: string,companyId:string) => {
@@ -96,21 +98,37 @@ export const getUsersByCompanyIdAction = async (companyId: string) => {
 
 export const getUsersWithAllCompanies = async(email: string )=> {
     try {
-        const userData = (await db.user.findUnique({
-                  omit:{
-                    password: true
-                  },
+        const userData = ( await db.user.findUnique({
                   where:{
                     email: email
-                  },
-                  include:{
-                    companiesUserRoles: {
-                      include:{
-                        role: true
+                  },        
+                  select:{
+                    email:true,
+                    companiesUserRoles:{
+                      select:{
+                        role:{
+                          select:{
+                            permissions: true
+                          }
+                        }
                       }
                     },
-                    createdCompanies: true
-                  }
+                    createdCompanies: {
+                      select: {
+                        id: true,
+                      },
+                    },
+                  },
+                  
+
+                  // include:{
+                  //   companiesUserRoles: {
+                  //     include:{
+                  //       role: true
+                  //     }
+                  //   },
+                  //   createdCompanies: true
+                  // }
             })  ) as UserWithAllCompanies
         return userData
 
@@ -119,3 +137,42 @@ export const getUsersWithAllCompanies = async(email: string )=> {
         throw new Error("error getUsersWithAllCompanies");
     }
 }
+
+//      function actions
+// ✅ Función reutilizable para obtener al usuario autenticado con permisos
+export async function getUserWithAllCompaniesAndPermissions() {
+    const session = await auth();
+    const email = session?.user?.email;
+  
+    if (!email) {
+      throw new Error("No existe una sesión");
+    }
+  
+    const user = await db.user.findUnique({
+      where: { email },
+      select: {
+        email: true,
+        companiesUserRoles: {
+          select: {
+            role: {
+              select: {
+                permissions: true,
+              },
+            },
+          },
+        },
+        createdCompanies: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  
+    if (!user) {
+      throw new Error("No existe información del usuario");
+    }
+  
+    return user;
+}
+

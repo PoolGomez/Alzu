@@ -47,7 +47,7 @@ export function CompanySwitcher({ myCompanies, sharedCompanies }: CompanySwitche
   }))
 
   const allFormattedCompanies = [ ...formattedMyCompanies, ...formattedSharedCompanies]
-  console.log("allFormattedCompanies: ", allFormattedCompanies)
+  // console.log("allFormattedCompanies: ", allFormattedCompanies)
   // const allFormattedCompanies = formattedMyCompanies.concat(formattedSharedCompanies)
 
   const currentCompany = allFormattedCompanies?.find(

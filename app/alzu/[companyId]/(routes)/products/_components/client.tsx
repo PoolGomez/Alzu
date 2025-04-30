@@ -8,7 +8,7 @@ import { ProductColumns } from './columns'
 import { useIsMobile } from '@/hooks/use-mobile'
 import ProductTable from './table-product'
 
-interface PreoductClientProps {
+interface ProductClientProps {
   data: ProductColumns[];
   isCreate: boolean;
   isEdit: boolean;
@@ -16,7 +16,7 @@ interface PreoductClientProps {
   isOwner: boolean;
 }
 
-const ProductClient = ({data, isCreate, isEdit, isDelete, isOwner}:PreoductClientProps) => {
+const ProductClient = ({data, isCreate, isEdit, isDelete, isOwner}:ProductClientProps) => {
     const params = useParams()
     const router = useRouter()
     const isMobile = useIsMobile();
@@ -31,7 +31,7 @@ const ProductClient = ({data, isCreate, isEdit, isDelete, isOwner}:PreoductClien
             {
                 (isCreate || isOwner) && (
                     <Button onClick={()=>router.push(`/alzu/${params.companyId}/products/create`)} className='cursor-pointer'>
-                        <Plus className="h-4 w-4 mr-2" />
+                        <Plus className="h-4 w-4" />
                         {!isMobile && "Crear Producto"}
                     </Button>
                 )

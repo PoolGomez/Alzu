@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
+// import axios from "axios"
 
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -13,6 +13,7 @@ import { Button } from "../ui/button"
 import toast from "react-hot-toast"
 import { Modal } from "@/components/modal"
 import { Company } from "@prisma/client"
+import { createCompanyAction } from "@/actions/company-actions"
 // import { DatabaseStoreRepository } from "@/src/infrastructure/database/repositories/DatabaseStoreRepository"
 // import { CreateStore } from "@/src/application/useCases/stores/CreateStore"
 
@@ -42,10 +43,17 @@ export const CompanyModal = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             setIsLoading(true)
-            const newCompany = (await axios.post("/api/companies", values)).data as Company;         
             //  const newStore = await useCase.execute(values.name);
-            toast.success("Empresa Creada")
-            window.location.assign(`/alzu/${newCompany.id}`)
+            // const newCompany = (await axios.post("/api/companies", values)).data as Company;         
+            const newCompany = await createCompanyAction(values.name) as Company
+            if(newCompany instanceof Error){
+                toast.error(newCompany.message)    
+            }else{
+                toast.success("Empresa Creada")
+                window.location.assign(`/alzu/${newCompany.id}`)
+            }
+            
+            
         } catch (error) {
             console.log(error)
             toast.error("Algo salió mal")
