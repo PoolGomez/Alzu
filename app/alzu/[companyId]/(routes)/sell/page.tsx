@@ -1,8 +1,17 @@
+import  SellClient from "./_components/client";
 
-const SellPage = () => {
+
+type Params = Promise<{
+  companyId: string;
+}>;
+
+const SellPage = async ({ params }: { params: Params }) => {
+
+  const { companyId } = await params;
   return (
-    <div>
-      Sell Page
+    <div className="flex-col">
+
+      <SellClient companyId={companyId} />
     </div>
   )
 }

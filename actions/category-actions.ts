@@ -9,6 +9,9 @@ export async function getAllCategoriesByCompanyIdAction(companyId: string) {
     if (!session?.user?.email) {
       throw new Error("No existe una sesión");
     }
+    if(!companyId){
+      throw new Error("No existe id de la empresa");
+    }
     const categories = await db.category.findMany({
       where: {
         companyId,

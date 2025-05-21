@@ -11,7 +11,10 @@ export async function getProductsByCompanyIdAction(companyId: string) {
     if (!session?.user?.email) {
       throw new Error("No existe una sesión");
     }
-    const categories = await db.product.findMany({
+    if(!companyId){
+      throw new Error("No existe id de empresa");
+    }
+    const products = await db.product.findMany({
       where: {
         companyId,
       },
@@ -26,13 +29,47 @@ export async function getProductsByCompanyIdAction(companyId: string) {
         }
       }
     });
-    return categories 
+    return products 
     // as Product[];
   } catch (error) {
     throw new Error(
       error instanceof Error
         ? error.message
         : "Error getProductsByCompanyIdAction"
+    );
+  }
+}
+
+export async function getProductsByCategoryIdAction(categoryId: string){
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("No existe una sesión");
+    }
+    if(!categoryId){
+      throw new Error("No existe el id de categoria");
+    }
+    const products = await db.product.findMany({
+      where: {
+        categoryId,
+      },
+      // omit:{
+      //   categoryId:true
+      // },
+      include:{
+        category:{
+          select:{
+            name: true
+          }
+        }
+      }
+    });
+    return products 
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Error getProductsByCategoryIdAction"
     );
   }
 }

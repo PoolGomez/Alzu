@@ -8,6 +8,7 @@ import {
 import { CompanyWithOwnerUsers, UserWithAllCompanies } from "@/types-db";
 import { db } from "@/lib/db";
 import { PermissionAction } from "@prisma/client";
+import { OrderProvider } from "@/lib/providers";
 
 type Params = Promise<{
   companyId: string
@@ -118,6 +119,7 @@ const DashboardLayout = async ({children, params}: DashboardLayout) => {
        if(companies.length > 0 ){
         return (
           <>
+          <OrderProvider>
           <SideBar 
             company={company}
             // companies={companies}
@@ -130,7 +132,7 @@ const DashboardLayout = async ({children, params}: DashboardLayout) => {
           >
               {children}
           </SideBar>
-          
+          </OrderProvider>
           </>
         )
        }
