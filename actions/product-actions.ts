@@ -18,9 +18,9 @@ export async function getProductsByCompanyIdAction(companyId: string) {
       where: {
         companyId,
       },
-      omit:{
-        categoryId:true
-      },
+      // omit:{
+      //   categoryId:true
+      // },
       include:{
         category:{
           select:{

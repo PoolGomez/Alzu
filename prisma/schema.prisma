@@ -1,39 +1,28 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-generator client {
-  provider = "prisma-client-js"
-}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  // role          Role      @default(user)
-  accounts      Account[]
-  // sessions      Session[]
-  // Optional for WebAuthn support
-  // Authenticator Authenticator[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  companiesUserRoles CompanyUserRole[] 
-  subcriptions UserSubcription[]
-  createdCompanies Company[] @relation("CompanyCreator") // Relación inversa
-  
-
-  Order Order[]
+  id                 String            @id @default(cuid())
+  name               String?
+  email              String            @unique
+  password           String?
+  emailVerified      DateTime?
+  image              String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  accounts           Account[]
+  createdCompanies   Company[]         @relation("CompanyCreator")
+  companiesUserRoles CompanyUserRole[]
+  Order              Order[]
+  subcriptions       UserSubcription?
 }
+
 model Account {
   userId            String
   type              String
@@ -46,261 +35,208 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
-// model Session {
-//   sessionToken String   @unique
-//   userId       String
-//   expires      DateTime
-//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+
 model VerificationToken {
-  identifier String   @unique
+  identifier String   @id @unique
   token      String
   expires    DateTime
-
-  @@id([identifier])
 }
+
 model ResetPasswordToken {
-  identifier String   @unique
+  identifier String   @id @unique
   token      String
   expires    DateTime
-  @@id([identifier])
 }
-// Optional for WebAuthn support
-// model Authenticator {
-//   credentialID         String  @unique
-//   userId               String
-//   providerAccountId    String
-//   credentialPublicKey  String
-//   counter              Int
-//   credentialDeviceType String
-//   credentialBackedUp   Boolean
-//   transports           String?
-
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@id([userId, credentialID])
-// }
 
 model Company {
-  id        String   @id @default(cuid())
-  name      String
-  ownerId    String  //session user id
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  owner User  @relation("CompanyCreator", fields: [ownerId], references:[id])
-  users CompanyUserRole[] // Relación con los usuarios que tienen acceso a la empresa
-  roles CompanyRole[]
+  id         String            @id @default(cuid())
+  name       String
+  ownerId    String
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
   categories Category[]
-  products Product[]
-  orders Order[]
-  rooms Room[]
-  tables Table[]
-  // presentations Presentation[]
+  owner      User              @relation("CompanyCreator", fields: [ownerId], references: [id])
+  roles      CompanyRole[]
+  users      CompanyUserRole[]
+  orders     Order[]
+  products   Product[]
+  rooms      Room[]
+  tables     Table[]
 }
 
 model Subcription {
-  id String @unique  //FREE , BASIC, PREMIUM, CUSTOM
-  name String
-  maxCompanies Int //limite de empresas que puede crear
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@id([id])
+  id           String            @id @unique
+  name         String
+  maxCompanies Int
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
   subcriptions UserSubcription[]
 }
 
 model UserSubcription {
-  id String @id @default(uuid())
-  userId String @unique
+  id            String      @id @default(uuid())
+  userId        String      @unique
   subcriptionId String
-  maxCompanies Int // Límite de empresas que puede crear
-
-  user     User    @relation(fields: [userId], references: [id])
-  subcription Subcription @relation(fields:[subcriptionId], references:[id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  maxCompanies  Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  subcription   Subcription @relation(fields: [subcriptionId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
 
   @@unique([userId, subcriptionId])
 }
 
 model CompanyRole {
-  id          String        @id @default(uuid())
-  name        String       
+  id          String             @id @default(uuid())
+  name        String
   description String
-  permissions PermissionAction[] //Json // Almacena los permisos como JSON para rápido acceso
-  companyId    String
-  company      Company      @relation(fields: [companyId], references: [id])
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  permissions PermissionAction[]
+  companyId   String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  company     Company            @relation(fields: [companyId], references: [id])
+  users       CompanyUserRole[]
 
-  users CompanyUserRole[]
   @@unique([companyId, name])
-  
 }
 
 model CompanyUserRole {
-  id        String @id @default(uuid())
-
+  id        String      @id @default(uuid())
   userId    String
   companyId String
   roleId    String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User    @relation(fields: [userId], references: [id])
-  company   Company @relation(fields: [companyId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  company   Company     @relation(fields: [companyId], references: [id])
   role      CompanyRole @relation(fields: [roleId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
 
-  @@unique([userId, companyId]) //Un usuario no puede estar dos veces en la misma empresa
+  @@unique([userId, companyId])
+}
 
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  companyId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  description String
+  isAvailable Boolean   @default(true)
+  company     Company   @relation(fields: [companyId], references: [id])
+  products    Product[]
+
+  @@unique([companyId, name])
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  companyId   String
+  categoryId  String
+  name        String
+  description String
+  isAvailable Boolean     @default(true)
+  imageUrl    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  price       Float
+  orderItems  OrderItem[]
+  category    Category    @relation(fields: [categoryId], references: [id])
+  company     Company     @relation(fields: [companyId], references: [id])
+}
+
+model OrderItem {
+  id        String          @id @default(uuid())
+  quantity  Int
+  price     Int
+  subtotal  Int
+  productId String
+  tableId   String
+  status    OrderItemStatus
+  companyId String
+  product   Product         @relation(fields: [productId], references: [id])
+  table     Table           @relation(fields: [tableId], references: [id])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  companyId String
+  roomId    String
+  tableId   String
+  userId    String?
+  total     Int
+  notes     String?
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  company   Company     @relation(fields: [companyId], references: [id])
+  user      User?       @relation(fields: [userId], references: [id])
+  Table     Table[]     @relation("OrderToTable")
+}
+
+model Room {
+  id          String   @id @default(uuid())
+  name        String
+  companyId   String
+  isAvailable Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id])
+  tables      Table[]
+}
+
+model Table {
+  id          String      @id @default(uuid())
+  status      TableStatus
+  roomId      String
+  companyId   String
+  isAvailable Boolean
+  name        String
+  orderItem   OrderItem[]
+  company     Company     @relation(fields: [companyId], references: [id])
+  room        Room        @relation(fields: [roomId], references: [id])
+  orders      Order[]     @relation("OrderToTable")
 }
 
 enum PermissionAction {
   VIEW_DASHBOARD
-
   VIEW_PRODUCTS
   CREATE_PRODUCT
   EDIT_PRODUCT
   DELETE_PRODUCT
-
   VIEW_CATEGORIES
   CREATE_CATEGORY
   EDIT_CATEGORY
   DELETE_CATEGORY
-
   VIEW_PRESENTATIONS
   CREATE_PRESENTATION
   EDIT_PRESENTATION
   DELETE_PRESENTATION
-
   VIEW_ORDERS
   CREATE_ORDER
   EDIT_ORDER
   DELETE_ORDER
-
   VIEW_ROOMS
   CREATE_ROOM
   EDIT_ROOM
   DELETE_ROOM
-
   VIEW_TABLES
   CREATE_TABLE
   EDIT_TABLE
   DELETE_TABLE
+  SELL
 }
 
-model Category {
-  id String @id @default(uuid())
-  name String
-  description String
-  isAvailable Boolean @default(true)
-
-  companyId    String
-  company      Company      @relation(fields: [companyId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([companyId, name])
-  products Product[]
-  // presentations Presentation[]
-}
-
-model Product {
-  id String @id @default(cuid())
-  companyId String
-  categoryId String
-  name String
-  description String
-  imageUrl String
-  price Float
-  isAvailable Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  company Company @relation(fields:[companyId], references:[id])
-  category Category @relation(fields:[categoryId], references:[id])
-  orderItems OrderItem[]
-}
-// model ProductPresentation {
-//   id String @id @default(uuid())
-//   presentationId String
-//   productId String
-//   description String
-//   imageUrl String
-//   price Int
-//   isAvailable Boolean @default(true)
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   product Product @relation(fields: [productId], references: [id])
-//   orderItems OrderItem[]
-// }
-
-// model Presentation {
-//   id String @id @default(uuid())
-//   name String
-//   description String
-//   categoryId String
-//   isAvailable Boolean @default(true)
-//   companyId String
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   category Category @relation(fields: [categoryId], references: [id])
-//   company Company @relation(fields: [companyId], references: [id])
-  
-// }
-model OrderItem {
-  id String @id @default(uuid())
-  orderId String
-  productId String
-  quantity Int
-  price Int
-  subtotal Int // quantity * price
-
-  order Order @relation(fields:[orderId], references:[id])
-  product Product @relation(fields:[productId], references:[id])
-}
-
-model Order {
-  id        String    @id @default(uuid())
-  companyId String
-  roomId    String
-  tableId   String
-  userId    String?  // Mesero que tomó la orden
-  total     Int 
-  notes     String?
-  status    OrderStatus @default(PENDING)
-
-  company   Company  @relation(fields: [companyId], references: [id])
-  // room      Room     @relation(fields: [roomId], references: [id])
-  // table     Table    @relation(fields: [tableId], references: [id])
-  user      User?    @relation(fields: [userId], references: [id])
-  orderItems OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Table Table[]
+enum OrderItemStatus {
+  CREATED
+  IN_PROGRESS
+  SERVED
+  CANCELED
 }
 
 enum OrderStatus {
@@ -308,32 +244,6 @@ enum OrderStatus {
   IN_PROGRESS
   SERVED
   CANCELED
-}
-
-model Room {
-  id        String @id @default(uuid())
-  name      String
-  companyId String
-  isAvailable Boolean
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  company   Company @relation(fields: [companyId], references: [id])
-  tables    Table[]
-}
-
-model Table {
-  id        String @id @default(uuid())
-  name    String  // 
-  status    TableStatus
-  roomId    String
-  companyId String
-  isAvailable Boolean
-
-  room      Room    @relation(fields: [roomId], references: [id])
-  company   Company @relation(fields: [companyId], references: [id])
-  orders    Order[]
 }
 
 enum TableStatus {

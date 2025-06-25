@@ -38,6 +38,14 @@ export const SideNav = ({userId, currentCompany, permissions}:SidenavProps) => {
             icon: LayoutDashboard,
             permission: "VIEW_DASHBOARD"
         },
+        {
+            href : `/alzu/${params.companyId}/sell`,
+            label :"Vender",
+            active : pathname === `/alzu/${params.companyId}/sell`,
+            icon: Armchair,
+            permission:"SELL"
+        },
+
         // {
         //     href : `/alzu/${params.companyId}/billboards`,
         //     label :"Billboards",

@@ -65,5 +65,17 @@ export type CompanyWithOwnerUsers = Prisma.CompanyGetPayload<{
 // }>
 
 
+//detalle comanda
+export type OrderItemWithProduct = Prisma.OrderItemGetPayload<{
+  include:{
+    product: {
+      select: {
+        name: true
+      }
+    }
+  }
+}>
+
+
 
 

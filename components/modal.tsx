@@ -24,23 +24,19 @@ export const Modal = (
         }
     }
     return (
-        <Dialog open={isOpen} onOpenChange={onChange}>
-
-                    <DialogContent className="max-w-screen max-h-screen overflow-y-auto">
-                        
-                        <DialogHeader>
-                            <DialogTitle>{title}</DialogTitle>
-                            <DialogDescription>{description}</DialogDescription>
-                        </DialogHeader>
-                        {/* <div> */}
-                            {children}
-                            {/* </div> */}
-                    </DialogContent>
-
-
-                    
-            
-        </Dialog>
-        
-    )
+      <Dialog open={isOpen} onOpenChange={onChange}>
+        <DialogContent 
+        // className="max-w-screen max-h-screen overflow-y-auto"
+        className="max-w-full max-h-full"
+        >
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
+          {/* <div> */}
+          {children}
+          {/* </div> */}
+        </DialogContent>
+      </Dialog>
+    );
 }

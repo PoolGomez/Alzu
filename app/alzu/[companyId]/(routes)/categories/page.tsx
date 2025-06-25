@@ -54,7 +54,7 @@ const CategoriesPage = async ({params}:{params: Params}) => {
         )
       }else{
         console.log("no tiene permiso")
-        redirect(`/alzu/${companyId}`)
+        redirect(`/alzu/${companyId}?message=Sus permisos para esta opción no existen o han sido actualizados`)
       }
 }
 

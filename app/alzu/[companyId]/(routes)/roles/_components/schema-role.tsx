@@ -33,6 +33,7 @@ const PermissionsSchema = z.enum([
   "EDIT_TABLE",
   "DELETE_TABLE",
   
+  "SELL",
 //   "VIEW_COMPANY"
 ]); // Ejemplo de permisos
 

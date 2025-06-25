@@ -30,6 +30,8 @@ export const permissionsOptions= [
     { id: 'CREATE_TABLE', label: 'Crear Mesa' },
     { id: 'EDIT_TABLE', label: 'Editar Mesa' },
     { id: 'DELETE_TABLE', label: 'Eliminar Mesa' },
+
+    { id: 'SELL', label: 'Vender' },
   
     // { id: 'VIEW_COMPANY', label: 'Ver Empresa' },
   ];

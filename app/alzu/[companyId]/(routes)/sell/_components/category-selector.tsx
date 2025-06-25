@@ -8,6 +8,7 @@ import { Category } from "@prisma/client";
 import { ChevronLeft, Coffee } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+// import OrderButton from "./order-button";
 
 const CategorySelector = ({companyId}:{companyId:string}) => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -59,13 +60,16 @@ const CategorySelector = ({companyId}:{companyId:string}) => {
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
+      <div className="flex items-center justify-between">
         <div className='flex items-center gap-2'>
-        <Button variant="outline" size="icon" 
-        onClick={handleBackClick}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-            <h2 className="text-2xl font-bold">Seleccione Categoria</h2>
+            <Button variant="outline" size="icon" 
+            onClick={handleBackClick}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+              <h2 className="text-2xl font-bold">Seleccione Categoria</h2>
+        </div>
+            {/* <OrderButton /> */}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category)=>(
